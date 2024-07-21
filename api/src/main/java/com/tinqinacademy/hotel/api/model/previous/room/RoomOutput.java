@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.api.model.previous.room;
 
-import com.tinqinacademy.hotel.api.enums.BathRoomType;
-import com.tinqinacademy.hotel.api.enums.Beds;
+import com.tinqinacademy.hotel.api.enums.BathRoom;
+import com.tinqinacademy.hotel.api.enums.Bed;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -15,8 +15,8 @@ import java.math.BigDecimal;
 public class RoomOutput {
     private String id;
     private int bedCount;
-    private Beds bed;
+    private Bed bed;
     private int floor;
     private BigDecimal price;
-    private BathRoomType roomType;
+    private BathRoom roomType;
 }

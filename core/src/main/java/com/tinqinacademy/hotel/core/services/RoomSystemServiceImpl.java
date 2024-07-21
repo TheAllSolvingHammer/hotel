@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.enums.BathRoomType;
-import com.tinqinacademy.hotel.api.enums.Beds;
+import com.tinqinacademy.hotel.api.enums.BathRoom;
+import com.tinqinacademy.hotel.api.enums.Bed;
 import com.tinqinacademy.hotel.api.exceptions.InputException;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateOutput;
@@ -54,8 +54,8 @@ public class RoomSystemServiceImpl implements RoomSystemService {
                 .ID("S123")
                 .price(new BigDecimal("3424"))
                 .floor(4)
-                .bedSize(Beds.getByCode("singlekingsize"))
-                .bathRoomType(BathRoomType.getByCode("private"))
+                .bedSize(Bed.getByCode("singlekingsize"))
+                .bathRoom(BathRoom.getByCode("private"))
                 .bedCount(2)
                 .datesOccupied(List.of(LocalDate.of(2021,2,16)
                 ,LocalDate.of(2001,9,11)))

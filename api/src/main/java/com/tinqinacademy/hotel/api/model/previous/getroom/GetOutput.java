@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.api.model.previous.getroom;
 
-import com.tinqinacademy.hotel.api.enums.Beds;
+import com.tinqinacademy.hotel.api.enums.Bed;
 import lombok.*;
 
 @Getter
@@ -11,5 +11,5 @@ import lombok.*;
 @Builder
 public class GetOutput {
     private Integer floor;
-    private Beds bedType;
+    private Bed bedType;
 }

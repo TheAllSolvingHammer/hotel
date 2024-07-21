@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tinqinacademy.hotel.api.enums.Beds;
+import com.tinqinacademy.hotel.api.enums.Bed;
 import com.tinqinacademy.hotel.api.model.previous.getroom.GetInput;
 import com.tinqinacademy.hotel.api.model.previous.getroom.GetOutput;
 import com.tinqinacademy.hotel.api.model.previous.room.RoomInput;
@@ -85,7 +85,7 @@ public class Controller {
     @GetMapping("/{floor}")
     public GetOutput getRoom(@PathVariable Integer floor, @RequestParam String bedType){
      GetInput getInput = GetInput.builder()
-             .bedType(Beds.getByCode(bedType))
+             .bedType(Bed.getByCode(bedType))
              .floor(floor)
              .build();
      return room.getRoom(getInput);

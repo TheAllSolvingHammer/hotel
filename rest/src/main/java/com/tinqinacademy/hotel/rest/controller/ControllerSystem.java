@@ -1,8 +1,8 @@
 package com.tinqinacademy.hotel.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tinqinacademy.hotel.api.enums.BathRoomType;
-import com.tinqinacademy.hotel.api.enums.Beds;
+import com.tinqinacademy.hotel.api.enums.BathRoom;
+import com.tinqinacademy.hotel.api.enums.Bed;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.delete.AdminDeleteInput;
@@ -56,8 +56,8 @@ public class ControllerSystem {
                 .startDate(startDate)
                 .endDate(endDate)
                 .bedCount(bedCount)
-                .bedSize(Beds.getByCode(bedSize))
-                .bathRoomType(BathRoomType.getByCode(bathRoomType))
+                .bedSize(Bed.getByCode(bedSize))
+                .bathRoom(BathRoom.getByCode(bathRoomType))
                 .build();
         return ResponseEntity.ok(roomSystemService.checkAvailability(availableInput));
 

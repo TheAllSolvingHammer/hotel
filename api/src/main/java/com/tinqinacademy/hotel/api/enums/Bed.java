@@ -6,24 +6,24 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum Beds {
+public enum Bed {
     SINGLE("single"),
     DOUBLE("double"),
-    SMALLDOUBLE("smallDouble"),
-    KINGSIZE("singlekingsize"),
-    QUEENSIZE("doublekingsize"),
+    SMALLDOUBLE("smalldouble"),
+    KINGSIZE("kingsize"),
+    QUEENSIZE("queensize"),
 
     UNKNOWN(null);
     private final String val;
 
-    private static final Map<String, Beds> map= new HashMap<>();
+    private static final Map<String, Bed> map= new HashMap<>();
     static {
-        for(Beds b : Beds.values()){
+        for(Bed b : Bed.values()){
             map.put(b.val, b);
         }
     }
 
-    Beds(String name) {
+    Bed(String name) {
         this.val = name;
     }
     @JsonValue
@@ -31,10 +31,10 @@ public enum Beds {
         return val;
     }
     @JsonCreator
-    public static Beds getByCode(String code){
+    public static Bed getByCode(String code){
     if(map.containsKey(code)) {
         return map.get(code);
     }
-    return Beds.UNKNOWN;
+    return Bed.UNKNOWN;
     }
 }
