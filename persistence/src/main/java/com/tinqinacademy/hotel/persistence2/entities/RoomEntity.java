@@ -14,14 +14,23 @@ import java.util.UUID;
 @AllArgsConstructor()
 @Builder
 @Entity
+@Table(name="rooms")
 public class RoomEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "room_id", updatable = false, nullable = false)
     private UUID id;
-    private Integer floor;
-    private String roomNumber;
-    @Enumerated(EnumType.STRING)
-    private BathRoom bathRoom;
-    private BigDecimal price;
 
+    @Column(name = "floor", nullable = false)
+    private Integer floor;
+
+    @Column(name = "room_number", nullable = false, length = 14)
+    private String roomNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "bath_room", nullable = false)
+    private BathRoom bathRoom;
+
+    @Column(name = "price", nullable = false)
+    private BigDecimal price;
 }
