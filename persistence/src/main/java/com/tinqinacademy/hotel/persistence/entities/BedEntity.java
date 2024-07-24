@@ -1,6 +1,6 @@
-package com.tinqinacademy.hotel.persistence2.entities;
+package com.tinqinacademy.hotel.persistence.entities;
 
-import com.tinqinacademy.hotel.persistence2.enums.Bed;
+import com.tinqinacademy.hotel.persistence.enums.Bed;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,16 +14,19 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name="beds")
+@EqualsAndHashCode()
 public class BedEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "bed_id", updatable = false, nullable = false)
+    @EqualsAndHashCode.Exclude
     private UUID id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private Bed type;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
 }

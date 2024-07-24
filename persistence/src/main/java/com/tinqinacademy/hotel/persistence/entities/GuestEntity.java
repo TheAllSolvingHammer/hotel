@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.persistence2.entities;
+package com.tinqinacademy.hotel.persistence.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,9 +14,9 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name="guests")
-public class Guest {
+public class GuestEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "guest_id", updatable = false, nullable = false)
     private UUID id;
 

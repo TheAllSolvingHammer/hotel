@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.persistence2.enums;
+package com.tinqinacademy.hotel.persistence.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -40,6 +40,10 @@ public enum Bed {
         return map.get(code);
     }
     return Bed.UNKNOWN;
+    }
+
+    public static int lengthOfBed(){
+       return Bed.values().length;
     }
 
 }

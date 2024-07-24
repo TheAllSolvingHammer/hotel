@@ -1,9 +1,9 @@
-package com.tinqinacademy.hotel.persistence2.entities;
+package com.tinqinacademy.hotel.persistence.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,7 +16,7 @@ import java.util.UUID;
 @Table(name="users")
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id", updatable = false, nullable = false)
     private UUID id;
 
@@ -34,4 +34,7 @@ public class UserEntity {
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "user")
+    private List<ReservationEntity> reservationEntity;
 }
