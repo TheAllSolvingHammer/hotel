@@ -1,10 +1,10 @@
 package com.tinqinacademy.hotel.persistence.repositorynew;
 
-import com.tinqinacademy.hotel.persistence.entities.GuestEntity;
+import com.tinqinacademy.hotel.persistence.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 @Repository
-public interface GuestRepository extends JpaRepository<GuestEntity, UUID> {
+public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 }

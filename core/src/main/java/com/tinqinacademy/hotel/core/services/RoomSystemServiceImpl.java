@@ -23,7 +23,10 @@ import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterInput;
 import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookOutput;
+import com.tinqinacademy.hotel.persistence.repositorynew.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,6 +38,27 @@ import java.util.List;
 @Slf4j
 @Service
 public class RoomSystemServiceImpl implements RoomSystemService {
+    private final RoomRepository roomRepository;
+    private final GuestRepository guestRepository;
+    private final BedRepository bedRepository;
+    private final UserRepository userRepository;
+    private final ReservationRepository reservationRepository;
+    private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public RoomSystemServiceImpl(RoomRepository roomRepository
+            , GuestRepository guestRepository
+            , BedRepository bedRepository
+            , UserRepository userRepository
+            , ReservationRepository reservationRepository
+            , JdbcTemplate jdbcTemplate) {
+        this.roomRepository = roomRepository;
+        this.guestRepository = guestRepository;
+        this.bedRepository = bedRepository;
+        this.userRepository = userRepository;
+        this.reservationRepository = reservationRepository;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public AvailableOutput checkAvailability(AvailableInput availableInput) {

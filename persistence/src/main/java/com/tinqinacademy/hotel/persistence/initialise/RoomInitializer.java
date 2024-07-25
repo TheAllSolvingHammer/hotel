@@ -63,6 +63,6 @@ public class RoomInitializer implements ApplicationRunner {
             roomRepository.saveAll(roomEntities);
 
         }
-        log.info("Finished initializing rooms {}", roomRepository);
+        log.info("Finished initializing rooms");
     }
 }

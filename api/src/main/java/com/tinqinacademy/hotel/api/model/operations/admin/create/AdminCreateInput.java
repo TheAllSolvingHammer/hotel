@@ -14,9 +14,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor()
 @Builder
 public class AdminCreateInput {
-    @Positive(message = "Bed count can not be negative or zero")
-    @Max(value=5, message = "Can not place this many beds in a room, right?")
-    private Integer bedCount;
+//    @Positive(message = "Bed count can not be negative or zero")
+//    @Max(value=5, message = "Can not place this many beds in a room, right?")
+//    private Integer bedCount;
     private Bed bedSize;
     private BathRoom bathRoom;
     @Positive(message = "Floor can not be negative or zero")

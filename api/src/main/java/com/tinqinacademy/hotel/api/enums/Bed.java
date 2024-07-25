@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.api.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.HashMap;
@@ -12,7 +13,6 @@ public enum Bed {
     SMALLDOUBLE("smalldouble"),
     KINGSIZE("kingsize"),
     QUEENSIZE("queensize"),
-
     UNKNOWN(null);
     private final String val;
 

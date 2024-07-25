@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.model.operations.user.availablecheck;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tinqinacademy.hotel.api.enums.BathRoom;
 import com.tinqinacademy.hotel.api.enums.Bed;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Getter
@@ -21,9 +23,7 @@ public class AvailableInput {
     private LocalDate startDate;
     @FutureOrPresent(message = "End date can not be in the past")
     private LocalDate endDate;
-    @Positive(message = "Bed count can not be negative or zero")
-    @Max(value=5, message = "Can not place this many beds in a room, right?")
-    private Integer bedCount;
-    private Bed bedSize;
     private BathRoom bathRoom;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<Bed> bedList;
 }

@@ -24,14 +24,17 @@ import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterOutput
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookOutput;
 import com.tinqinacademy.hotel.core.services.RoomSystemService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import org.hibernate.annotations.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @RestController
@@ -51,12 +54,15 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
-    public ResponseEntity<AvailableOutput> checkAvailable(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam Integer bedCount, @RequestParam String bedSize, @RequestParam String bathRoomType) {
+    @Operation(summary = "Checks availability")
+    public ResponseEntity<AvailableOutput> checkAvailable(@RequestParam LocalDate startDate
+            , @RequestParam LocalDate endDate
+            , @RequestParam List<String> bedList
+            , @RequestParam String bathRoomType) {
         AvailableInput availableInput = AvailableInput.builder()
                 .startDate(startDate)
                 .endDate(endDate)
-                .bedCount(bedCount)
-                .bedSize(Bed.getByCode(bedSize))
+                .bedList(bedList.stream().map(Bed::getByCode).toList())
                 .bathRoom(BathRoom.getByCode(bathRoomType))
                 .build();
         return ResponseEntity.ok(roomSystemService.checkAvailability(availableInput));
@@ -68,6 +74,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
+    @Operation(summary = "Display all info regarding a room")
     public ResponseEntity<DisplayRoomOutput> display(@PathVariable String roomID){
         DisplayRoomInput displayRoomInput = DisplayRoomInput.builder()
                 .roomID(roomID)
@@ -81,6 +88,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
+    @Operation(summary = "Makes a booking")
     public ResponseEntity<BookOutput> book(@PathVariable String roomID,@Valid @RequestBody BookInput request){
     BookInput bookInput = request.toBuilder()
             .roomID(roomID)
@@ -96,6 +104,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request"),
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
+    @Operation(summary = "Removes a booking")
     public ResponseEntity<UnbookOutput> unbook(@PathVariable String bookingID){
         UnbookInput unbookInput = UnbookInput.builder()
                 .bookId(bookingID)
@@ -111,6 +120,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request"),
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
+    @Operation(summary = "Registers a person")
     public ResponseEntity<RegisterOutput> register(@Valid @RequestBody RegisterInput registerInput){
         return ResponseEntity.ok(roomSystemService.registerPerson(registerInput));
     }
@@ -122,6 +132,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request"),
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
+    @Operation(summary = "Administrative register")
     public ResponseEntity<AdminRegisterOutput> adminRegister(@RequestParam LocalDate startDate,
                                                              @RequestParam LocalDate endDate,
                                                              @RequestParam String firstName,
@@ -154,6 +165,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request"),
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
+    @Operation(summary = "Admin creates room")
     public ResponseEntity<AdminCreateOutput> adminCreate(@Valid @RequestBody AdminCreateInput adminCreateInput) {
         return ResponseEntity.ok(roomSystemService.adminCreate(adminCreateInput));
     }
@@ -165,6 +177,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request"),
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
+    @Operation(summary = "Admin updates room")
     public ResponseEntity<AdminUpdateOutput> adminUpdate(@PathVariable String roomID,@Valid @RequestBody AdminUpdateInput request) {
         AdminUpdateInput adminUpdateInput = request.toBuilder()
                 .roomID(roomID)
@@ -179,6 +192,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request"),
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
+    @Operation(summary = "Admin partially updates the system")
     public ResponseEntity<AdminPartialUpdateOutput> adminPartialUpdate(@PathVariable String roomID,@Valid @RequestBody AdminPartialUpdateInput request) {
         AdminPartialUpdateInput adminPartialUpdateInput = request.toBuilder()
                 .roomID(roomID)
@@ -192,6 +206,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request"),
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
+    @Operation(summary = "Admin deletes a room")
     public ResponseEntity<AdminDeleteOutput> adminDelete(@PathVariable String roomID) {
         AdminDeleteInput adminDeleteInput = AdminDeleteInput.builder()
                 .ID(roomID)
