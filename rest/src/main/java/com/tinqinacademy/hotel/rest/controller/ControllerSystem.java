@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -57,12 +58,12 @@ public class ControllerSystem {
     @Operation(summary = "Checks availability")
     public ResponseEntity<AvailableOutput> checkAvailable(@RequestParam LocalDate startDate
             , @RequestParam LocalDate endDate
-            , @RequestParam List<String> bedList
+            , @RequestParam String bed
             , @RequestParam String bathRoomType) {
         AvailableInput availableInput = AvailableInput.builder()
                 .startDate(startDate)
                 .endDate(endDate)
-                .bedList(bedList.stream().map(Bed::getByCode).toList())
+                .bed(bed)
                 .bathRoom(BathRoom.getByCode(bathRoomType))
                 .build();
         return ResponseEntity.ok(roomSystemService.checkAvailability(availableInput));

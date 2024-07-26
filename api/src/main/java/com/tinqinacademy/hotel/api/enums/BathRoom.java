@@ -3,6 +3,7 @@ package com.tinqinacademy.hotel.api.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,9 +12,7 @@ public enum BathRoom {
     private final String val;
     private static final Map<String, BathRoom> map= new HashMap<>();
     static {
-        for (BathRoom bt : BathRoom.values()) {
-            map.put(bt.toString(), bt);
-        }
+        Arrays.stream(BathRoom.values()).forEach(bt -> map.put(bt.toString(), bt));
     }
     BathRoom(String s) {
         this.val =s;

@@ -23,6 +23,7 @@ import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterInput;
 import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookOutput;
+import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
 import com.tinqinacademy.hotel.persistence.repositorynew.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -63,10 +65,18 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     @Override
     public AvailableOutput checkAvailability(AvailableInput availableInput) {
         log.info("Start check availability: {}", availableInput);
-        AvailableOutput availableOutput = AvailableOutput.builder()
-                        .id(new ArrayList<>(Arrays.asList("1","2","3"))).build();
-
-
+        Bed bed= Bed.getByCode(availableInput.getBed());
+        if(bed.equals(Bed.UNKNOWN)){
+            log.info("Finished bed check. Bed is unknown{}", availableInput.getBed());
+            throw new InputException("Bed is unknown");
+        }
+        List<UUID> rooms =roomRepository.findByCustom(availableInput.getEndDate()
+                ,availableInput.getStartDate()
+                ,availableInput.getBathRoom().toString().toUpperCase()
+                ,availableInput.getBed().toUpperCase());
+        AvailableOutput availableOutput= AvailableOutput.builder()
+                .id(rooms)
+                .build();
         log.info("End check availability: {}", availableOutput);
         return availableOutput;
     }
