@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.persistence.initialise;
 
 import com.tinqinacademy.hotel.persistence.entities.BedEntity;
-import com.tinqinacademy.hotel.persistence.enums.Bed;
+import com.tinqinacademy.hotel.persistence.enums.BedTypes;
 import com.tinqinacademy.hotel.persistence.repositorynew.BedRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -42,11 +42,11 @@ public class EnumInitializer implements ApplicationRunner {
     }
     private Set<BedEntity> convertEnum(){
         Set<BedEntity> bedList=new HashSet<>();
-        for(Bed bed:Bed.values()){
-            if(bed!=Bed.UNKNOWN) {
+        for(BedTypes bedTypes : BedTypes.values()){
+            if(bedTypes != BedTypes.UNKNOWN) {
                 bedList.add(BedEntity.builder()
-                        .type(bed)
-                        .capacity(bed.getCapacity())
+                        .type(bedTypes)
+                        .capacity(bedTypes.getCapacity())
                         .build());
             }
         }

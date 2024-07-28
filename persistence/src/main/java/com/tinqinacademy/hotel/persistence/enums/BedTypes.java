@@ -7,26 +7,26 @@ import lombok.Getter;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum Bed {
+public enum BedTypes {
     SINGLE("single",1),
     DOUBLE("double",2),
-    SMALLDOUBLE("smalldouble",2),
-    KINGSIZE("kingsize",3),
-    QUEENSIZE("queensize",3),
+    SMALLDOUBLE("smallDouble",2),
+    KINGSIZE("kingSize",3),
+    QUEENSIZE("queenSize",3),
 
     UNKNOWN(null,0);
     private final String val;
     @Getter
     private final Integer capacity;
 
-    private static final Map<String, Bed> map= new HashMap<>();
+    private static final Map<String, BedTypes> map= new HashMap<>();
     static {
-        for(Bed b : Bed.values()){
+        for(BedTypes b : BedTypes.values()){
             map.put(b.val, b);
         }
     }
 
-    Bed(String name,Integer capacity) {
+    BedTypes(String name, Integer capacity) {
         this.val = name;
         this.capacity = capacity;
     }
@@ -35,15 +35,15 @@ public enum Bed {
         return val;
     }
     @JsonCreator
-    public static Bed getByCode(String code){
+    public static BedTypes getByCode(String code){
     if(map.containsKey(code)) {
         return map.get(code);
     }
-    return Bed.UNKNOWN;
+    return BedTypes.UNKNOWN;
     }
 
     public static int lengthOfBed(){
-       return Bed.values().length;
+       return BedTypes.values().length;
     }
 
 }

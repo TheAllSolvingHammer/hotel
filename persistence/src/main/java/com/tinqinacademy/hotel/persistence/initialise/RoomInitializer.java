@@ -2,8 +2,7 @@ package com.tinqinacademy.hotel.persistence.initialise;
 
 import com.tinqinacademy.hotel.persistence.entities.BedEntity;
 import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
-import com.tinqinacademy.hotel.persistence.enums.BathRoom;
-import com.tinqinacademy.hotel.persistence.enums.Bed;
+import com.tinqinacademy.hotel.persistence.enums.BathTypes;
 import com.tinqinacademy.hotel.persistence.repositorynew.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -40,21 +39,21 @@ public class RoomInitializer implements ApplicationRunner {
             List<BedEntity> bedEntities = bedRepository.findAll();
             Set<RoomEntity> roomEntities = new HashSet<>();
             roomEntities.add(RoomEntity.builder()
-                    .bathRoom(BathRoom.PRIVATE)
+                    .bathTypes(BathTypes.PRIVATE)
                     .floor(2)
                     .roomNumber("201")
                     .price(BigDecimal.valueOf(398))
                     .bedList(List.of(bedEntities.getFirst(), bedEntities.get(1), bedEntities.getLast()))
                     .build());
             roomEntities.add(RoomEntity.builder()
-                    .bathRoom(BathRoom.SHARED)
+                    .bathTypes(BathTypes.SHARED)
                     .floor(1)
                     .roomNumber("100A")
                     .price(BigDecimal.valueOf(4))
                     .bedList(List.of(bedEntities.getLast()))
                     .build());
             roomEntities.add(RoomEntity.builder()
-                    .bathRoom(BathRoom.PRIVATE)
+                    .bathTypes(BathTypes.PRIVATE)
                     .floor(2)
                     .roomNumber("200")
                     .price(BigDecimal.valueOf(236))

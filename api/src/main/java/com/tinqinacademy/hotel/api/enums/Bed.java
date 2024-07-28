@@ -11,11 +11,11 @@ import java.util.Map;
 public enum Bed {
     SINGLE("single"),
     DOUBLE("double"),
-    SMALL_DOUBLE("smallDouble"),
-    KING_SIZE("kingSize"),
-    QUEEN_SIZE("queenSize"),
+    SMALLDOUBLE("smallDouble"),
+    KINGSIZE("kingSize"),
+    QUEENSIZE("queenSize"),
     @JsonIgnore
-    UNKNOWN("");
+    UNKNOWN(null);
     private final String val;
 
     private static final Map<String, Bed> map = new HashMap<>();

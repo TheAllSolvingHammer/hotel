@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.persistence.entities;
 
-import com.tinqinacademy.hotel.persistence.enums.BathRoom;
+import com.tinqinacademy.hotel.persistence.enums.BathTypes;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +30,7 @@ public class RoomEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "bath_room", nullable = false)
-    private BathRoom bathRoom;
+    private BathTypes bathTypes;
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;

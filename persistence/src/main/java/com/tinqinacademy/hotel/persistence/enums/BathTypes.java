@@ -6,16 +6,16 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum BathRoom {
+public enum BathTypes {
     PRIVATE("private"), SHARED("shared"),UNKNOWN(null);
     private final String val;
-    private static final Map<String, BathRoom> map= new HashMap<>();
+    private static final Map<String, BathTypes> map= new HashMap<>();
     static {
-        for (BathRoom bt : BathRoom.values()) {
+        for (BathTypes bt : BathTypes.values()) {
             map.put(bt.toString(), bt);
         }
     }
-    BathRoom(String s) {
+    BathTypes(String s) {
         this.val =s;
     }
     @JsonValue
@@ -23,11 +23,11 @@ public enum BathRoom {
         return val;
     }
     @JsonCreator
-    public static BathRoom getByCode(String code){
+    public static BathTypes getByCode(String code){
     if(map.containsKey(code)) {
         return map.get(code);
     }
-    return BathRoom.UNKNOWN;
+    return BathTypes.UNKNOWN;
     }
 
 }

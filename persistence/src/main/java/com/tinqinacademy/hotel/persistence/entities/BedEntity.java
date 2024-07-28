@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.persistence.entities;
 
-import com.tinqinacademy.hotel.persistence.enums.Bed;
+import com.tinqinacademy.hotel.persistence.enums.BedTypes;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +24,7 @@ public class BedEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private Bed type;
+    private BedTypes type;
 
     @EqualsAndHashCode.Exclude
     @Column(name = "capacity", nullable = false)

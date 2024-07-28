@@ -23,7 +23,11 @@ import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterInput;
 import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookOutput;
+import com.tinqinacademy.hotel.persistence.entities.BedEntity;
+import com.tinqinacademy.hotel.persistence.entities.ReservationEntity;
 import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
+import com.tinqinacademy.hotel.persistence.entities.UserEntity;
+import com.tinqinacademy.hotel.persistence.enums.BathTypes;
 import com.tinqinacademy.hotel.persistence.repositorynew.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +36,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -84,6 +85,8 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     @Override
     public DisplayRoomOutput displayRoom(DisplayRoomInput displayRoomInput) {
         log.info("Start display room: {}", displayRoomInput);
+        //todo
+        //fixme
         DisplayRoomOutput displayRoomOutput = DisplayRoomOutput.builder()
                 .ID("S123")
                 .price(new BigDecimal("3424"))
@@ -102,6 +105,25 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     @Override
     public BookOutput bookRoom(BookInput bookInput) {
         log.info("Start book room: {}", bookInput);
+
+
+
+        UserEntity userEntity = UserEntity.builder()
+                .id(UUID.randomUUID())
+                .email(bookInput.getEmail())
+                .firstName(bookInput.getFirstName())
+                .lastName(bookInput.getLastName())
+                .phoneNumber(bookInput.getPhoneNo())
+                .birthday(bookInput.getDateOfBirth())
+                .build();
+
+
+        ReservationEntity reservationEntity = ReservationEntity.builder()
+                .room(roomRepository.getReferenceById(bookInput.getRoomID()))
+
+                .build();
+
+
         BookOutput bookOutput = BookOutput.builder()
                 .message("Successfully booked a room")
                 .build();
@@ -154,14 +176,30 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     @Override
     public AdminCreateOutput adminCreate(AdminCreateInput adminCreateInput) {
         log.info("Start admin create room: {}", adminCreateInput);
-        if(adminCreateInput.getRoomID().equalsIgnoreCase("5A")){
-            log.error("Invalid room for admin creation");
-            throw new InputException("Invalid room for creation");
-
+        //fixme
+        //todo
+        BathRoom bathRoom=BathRoom.getByCode(adminCreateInput.getBathRoom());
+        if(bathRoom.equals(BathRoom.UNKNOWN)){
+            throw new InputException("Bathroom is unknown");
         }
 
+        List<BedEntity> bedEntities = bedRepository.findAll();
+        for(String s:adminCreateInput.getBedType())
+        {
+
+            if(bedEntities.contains(Bed.getByCode(s))){
+
+            }
+        }
+        RoomEntity roomEntity = RoomEntity.builder()
+                .id(UUID.randomUUID())
+                .roomNumber(adminCreateInput.getRoomNumber())
+                .bathTypes(BathTypes.getByCode(adminCreateInput.getBathRoom()))
+                //.bedList()
+
+                .build();
         AdminCreateOutput adminCreateOutput = AdminCreateOutput.builder()
-                .ID("23982378")
+                .ID(roomEntity.getId())
                 .build();
         log.info("End admin create room: {}", adminCreateOutput);
         return adminCreateOutput;

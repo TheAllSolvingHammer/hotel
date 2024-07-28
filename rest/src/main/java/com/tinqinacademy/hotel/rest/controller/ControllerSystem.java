@@ -2,7 +2,6 @@ package com.tinqinacademy.hotel.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinqinacademy.hotel.api.enums.BathRoom;
-import com.tinqinacademy.hotel.api.enums.Bed;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.delete.AdminDeleteInput;
@@ -28,23 +27,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.UUID;
 
 
 @RestController
 @RequestMapping("/api")
 public class ControllerSystem {
-    private RoomSystemService roomSystemService;
-    private ObjectMapper objectMapper;
+    private final RoomSystemService roomSystemService;
+    private final ObjectMapper objectMapper;
     @Autowired
-    public ControllerSystem(RoomSystemService roomSystemService, ObjectMapper objectMapper) {
+    public ControllerSystem(final RoomSystemService roomSystemService,final ObjectMapper objectMapper) {
         this.roomSystemService = roomSystemService;
         this.objectMapper = objectMapper;
 
@@ -76,7 +73,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
     @Operation(summary = "Display all info regarding a room")
-    public ResponseEntity<DisplayRoomOutput> display(@PathVariable String roomID){
+    public ResponseEntity<DisplayRoomOutput> display(@PathVariable UUID roomID){
         DisplayRoomInput displayRoomInput = DisplayRoomInput.builder()
                 .roomID(roomID)
                 .build();
@@ -90,7 +87,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
     @Operation(summary = "Makes a booking")
-    public ResponseEntity<BookOutput> book(@PathVariable String roomID,@Valid @RequestBody BookInput request){
+    public ResponseEntity<BookOutput> book(@PathVariable UUID roomID,@Valid @RequestBody BookInput request){
     BookInput bookInput = request.toBuilder()
             .roomID(roomID)
             .build();
