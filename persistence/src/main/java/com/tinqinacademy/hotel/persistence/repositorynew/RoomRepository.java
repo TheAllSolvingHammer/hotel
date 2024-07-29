@@ -40,14 +40,7 @@ public interface RoomRepository extends JpaRepository<RoomEntity, UUID> {
     Optional<RoomEntity> findByRoomNumber(String roomNumber);
 
 
-    String query_id= """
-            SELECT r.room_id,r.bath_room,r.floor,r.price,r.room_number
-            FROM rooms r
-            
-            WHERE r.room_id=:roomID
-            """;
-    @Query(value=query_id, nativeQuery=true)
-    Optional<RoomEntity> findRoomEntityByID(String roomID);
+
 
 
 

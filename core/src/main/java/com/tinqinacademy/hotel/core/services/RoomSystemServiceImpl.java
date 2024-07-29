@@ -30,16 +30,16 @@ import com.tinqinacademy.hotel.persistence.entities.UserEntity;
 import com.tinqinacademy.hotel.persistence.enums.BathTypes;
 import com.tinqinacademy.hotel.persistence.enums.BedTypes;
 import com.tinqinacademy.hotel.persistence.repositorynew.*;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import java.time.temporal.ChronoUnit;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-
+@AllArgsConstructor
 @Slf4j
 @Service
 public class RoomSystemServiceImpl implements RoomSystemService {
@@ -48,22 +48,9 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     private final BedRepository bedRepository;
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
-    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public RoomSystemServiceImpl(RoomRepository roomRepository
-            , GuestRepository guestRepository
-            , BedRepository bedRepository
-            , UserRepository userRepository
-            , ReservationRepository reservationRepository
-            , JdbcTemplate jdbcTemplate) {
-        this.roomRepository = roomRepository;
-        this.guestRepository = guestRepository;
-        this.bedRepository = bedRepository;
-        this.userRepository = userRepository;
-        this.reservationRepository = reservationRepository;
-        this.jdbcTemplate = jdbcTemplate;
-    }
+
+
 
     @Override
     public AvailableOutput checkAvailability(AvailableInput availableInput) {
@@ -107,9 +94,11 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     @Override
     public BookOutput bookRoom(BookInput bookInput) {
         log.info("Start book room: {}", bookInput);
-
-
-
+        Long year=ChronoUnit.YEARS.between(bookInput.getDateOfBirth(), LocalDate.now());
+        if(year<18L){
+            throw new InputException("User is not old enough");
+        }
+        Long daysAtHotel=ChronoUnit.DAYS.between(bookInput.getEndDate(),bookInput.getStartDate());
         UserEntity userEntity = UserEntity.builder()
                 .id(UUID.randomUUID())
                 .email(bookInput.getEmail())
@@ -120,9 +109,10 @@ public class RoomSystemServiceImpl implements RoomSystemService {
                 .build();
 
 
+
         ReservationEntity reservationEntity = ReservationEntity.builder()
                 .room(roomRepository.getReferenceById(bookInput.getRoomID()))
-
+                .price(BigDecimal.valueOf(daysAtHotel)*roomRepository.getReferenceById(bookInput.getRoomID()).getPrice()));
                 .build();
 
 
