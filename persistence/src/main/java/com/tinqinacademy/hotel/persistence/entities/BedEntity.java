@@ -4,6 +4,7 @@ import com.tinqinacademy.hotel.persistence.enums.BedTypes;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Collection;
 import java.util.UUID;
 
 @Getter
@@ -29,4 +30,5 @@ public class BedEntity {
     @EqualsAndHashCode.Exclude
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
+
 }

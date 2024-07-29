@@ -12,7 +12,9 @@ public enum BathRoom {
     private final String val;
     private static final Map<String, BathRoom> map= new HashMap<>();
     static {
-        Arrays.stream(BathRoom.values()).forEach(bt -> map.put(bt.toString(), bt));
+        Arrays.stream(BathRoom.values())
+                .filter(b->b!=UNKNOWN)
+                .forEach(bt -> map.put(bt.toString(), bt));
     }
     BathRoom(String s) {
         this.val =s;

@@ -39,20 +39,20 @@ public class ExceptionServiceImpl implements ExceptionService {
                 .build();
     }
 
-    @Override
-    public ResponseErrorBody handle(Exception ex) {
-        ErrorWrapper errorWrapper= ErrorWrapper.builder()
-                .message(ex.getMessage())
-                .status(HttpStatus.BAD_REQUEST)
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .timestamp(LocalDate.now())
-                .build();
-        List<ErrorWrapper> errorWrappers = new ArrayList<>();
-        errorWrappers.add(errorWrapper);
-        return ResponseErrorBody.builder()
-                .errors(errorWrappers)
-                .build();
-    }
+//    @Override
+//    public ResponseErrorBody handle(Exception ex) {
+//        ErrorWrapper errorWrapper= ErrorWrapper.builder()
+//                .message(ex.)
+//                .status(HttpStatus.BAD_REQUEST)
+//                .statusCode(HttpStatus.BAD_REQUEST.value())
+//                .timestamp(LocalDate.now())
+//                .build();
+//        List<ErrorWrapper> errorWrappers = new ArrayList<>();
+//        errorWrappers.add(errorWrapper);
+//        return ResponseErrorBody.builder()
+//                .errors(errorWrappers)
+//                .build();
+//    }
 
 
 }

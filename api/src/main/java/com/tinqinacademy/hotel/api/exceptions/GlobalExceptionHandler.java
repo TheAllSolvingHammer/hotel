@@ -28,8 +28,8 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.handle(ex));
     }
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseErrorBody> handleException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.handle(ex));
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ResponseErrorBody> handleException(Exception ex) {
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.handle(ex));
+//    }
 }

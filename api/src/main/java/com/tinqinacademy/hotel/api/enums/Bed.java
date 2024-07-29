@@ -22,6 +22,7 @@ public enum Bed {
 
     static {
         Arrays.stream(Bed.values())
+                .filter(b -> b != UNKNOWN)
                 .forEach(b -> map.put(b.val, b));
     }
 

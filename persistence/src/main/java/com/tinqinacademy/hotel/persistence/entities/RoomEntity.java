@@ -35,11 +35,20 @@ public class RoomEntity {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(
             name = "room_bed",
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "bed_id")
     )
     private List<BedEntity> bedList;
+
+
+    public Boolean addBedEntity(BedEntity bedEntity) {
+        return this.bedList.add(bedEntity);
+    }
+    public Boolean removeBedEntity(BedEntity bedEntity) {
+        return this.bedList.remove(bedEntity);
+    }
+
 }

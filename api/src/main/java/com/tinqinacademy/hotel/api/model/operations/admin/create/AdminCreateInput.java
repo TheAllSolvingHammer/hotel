@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.model.operations.admin.create;
 
+import com.tinqinacademy.hotel.api.model.contracts.AdminOperation;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -12,10 +13,9 @@ import java.util.List;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder
-public class AdminCreateInput {
+public class AdminCreateInput implements AdminOperation{
     @NotBlank
     private String roomNumber;
-
     private List<String> bedType;
     private String bathRoom;
     @Positive(message = "Floor can not be negative or zero")

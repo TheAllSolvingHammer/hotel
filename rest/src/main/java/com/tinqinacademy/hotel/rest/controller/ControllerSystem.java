@@ -178,7 +178,7 @@ public class ControllerSystem {
     @Operation(summary = "Admin updates room")
     public ResponseEntity<AdminUpdateOutput> adminUpdate(@PathVariable String roomID,@Valid @RequestBody AdminUpdateInput request) {
         AdminUpdateInput adminUpdateInput = request.toBuilder()
-                .roomID(roomID)
+                .roomID(UUID.fromString(roomID))
                 .build();
         return ResponseEntity.ok(roomSystemService.adminUpdate(adminUpdateInput));
     }
@@ -205,7 +205,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Admin deletes a room")
-    public ResponseEntity<AdminDeleteOutput> adminDelete(@PathVariable String roomID) {
+    public ResponseEntity<AdminDeleteOutput> adminDelete(@PathVariable UUID roomID) {
         AdminDeleteInput adminDeleteInput = AdminDeleteInput.builder()
                 .ID(roomID)
                 .build();

@@ -28,6 +28,7 @@ import com.tinqinacademy.hotel.persistence.entities.ReservationEntity;
 import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
 import com.tinqinacademy.hotel.persistence.entities.UserEntity;
 import com.tinqinacademy.hotel.persistence.enums.BathTypes;
+import com.tinqinacademy.hotel.persistence.enums.BedTypes;
 import com.tinqinacademy.hotel.persistence.repositorynew.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -176,30 +178,40 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     @Override
     public AdminCreateOutput adminCreate(AdminCreateInput adminCreateInput) {
         log.info("Start admin create room: {}", adminCreateInput);
-        //fixme
-        //todo
         BathRoom bathRoom=BathRoom.getByCode(adminCreateInput.getBathRoom());
         if(bathRoom.equals(BathRoom.UNKNOWN)){
             throw new InputException("Bathroom is unknown");
         }
-
-        List<BedEntity> bedEntities = bedRepository.findAll();
-        for(String s:adminCreateInput.getBedType())
-        {
-
-            if(bedEntities.contains(Bed.getByCode(s))){
-
-            }
+        Optional<RoomEntity> roomEntityOptional = roomRepository.findByRoomNumber(adminCreateInput.getRoomNumber());
+        if(roomEntityOptional.isPresent()){
+            throw new InputException("Room already exists");
         }
+        List<String> bedStrings = Arrays.stream(Bed.values()).map(Bed::toString).toList();
+        List<String> inputBedEntities = adminCreateInput.getBedType();
+        if(Collections.disjoint(bedStrings,inputBedEntities)){
+            throw new InputException("Given list does not contain any valid bed");
+        }
+        inputBedEntities.retainAll(bedStrings);
+        log.info("input bed entities,{}", inputBedEntities);
+        List<BedEntity> entities = inputBedEntities.stream()
+                .map(BedTypes::getByCode)
+                .filter(bedType -> !bedType.equals(BedTypes.UNKNOWN))
+                .map(bedType -> bedRepository.findEntityByType(bedType.name()))
+                .toList();
+
         RoomEntity roomEntity = RoomEntity.builder()
-                .id(UUID.randomUUID())
                 .roomNumber(adminCreateInput.getRoomNumber())
                 .bathTypes(BathTypes.getByCode(adminCreateInput.getBathRoom()))
-                //.bedList()
-
+                .floor(adminCreateInput.getFloor())
+                .price(adminCreateInput.getPrice())
+                .bedList(entities)
                 .build();
+
+
+        roomRepository.save(roomEntity);
         AdminCreateOutput adminCreateOutput = AdminCreateOutput.builder()
                 .ID(roomEntity.getId())
+                .roomNumber(roomEntity.getRoomNumber())
                 .build();
         log.info("End admin create room: {}", adminCreateOutput);
         return adminCreateOutput;
@@ -208,10 +220,39 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     @Override
     public AdminUpdateOutput adminUpdate(AdminUpdateInput adminUpdateInput) {
         log.info("Start admin update room: {}", adminUpdateInput);
-        if(adminUpdateInput.getRoomID().equalsIgnoreCase("5A"))
-            throw new InputException("Invalid room for update");
+        Optional<RoomEntity> roomEntityOptional = roomRepository.findById(adminUpdateInput.getRoomID());
+        if(roomEntityOptional.isEmpty()){
+            throw new InputException("Room not found");
+        }
+        BathRoom bathRoom=BathRoom.getByCode(adminUpdateInput.getBathRoom());
+        if(bathRoom.equals(BathRoom.UNKNOWN)){
+            throw new InputException("Bathroom is unknown");
+        }
+        List<String> bedStrings = Arrays.stream(Bed.values()).map(Bed::toString).toList();
+        List<String> inputBedEntities = adminUpdateInput.getBedSize();
+        if(Collections.disjoint(bedStrings,inputBedEntities)){
+            throw new InputException("Given list does not contain any valid bed");
+        }
+        inputBedEntities.retainAll(bedStrings);
+        log.info("input bed entities,{}", inputBedEntities);
+        List<BedEntity> entities = inputBedEntities.stream()
+                .map(BedTypes::getByCode)
+                .filter(bedType -> !bedType.equals(BedTypes.UNKNOWN))
+                .map(bedType -> bedRepository.findEntityByType(bedType.name()))
+                .toList();
+
+        log.info("Bed entities list{}",entities);
+        RoomEntity updateEntity=roomRepository.getReferenceById(adminUpdateInput.getRoomID());
+        updateEntity.setBathTypes(BathTypes.getByCode(adminUpdateInput.getBathRoom()));
+        updateEntity.setFloor(adminUpdateInput.getFloor());
+        updateEntity.setPrice(adminUpdateInput.getPrice());
+        updateEntity.setRoomNumber(adminUpdateInput.getRoomNumber());
+        updateEntity.setBedList(entities);
+        log.info("Roomentity,{}", updateEntity);
+        roomRepository.flush();
         AdminUpdateOutput adminUpdateOutput = AdminUpdateOutput.builder()
-                .ID("239283")
+                .ID(updateEntity.getId())
+                .roomNumber(updateEntity.getRoomNumber())
                 .build();
         log.info("End admin update room: {}", adminUpdateOutput);
         return adminUpdateOutput;
@@ -232,13 +273,16 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     @Override
     public AdminDeleteOutput adminDelete(AdminDeleteInput adminDeleteInput) {
         log.info("Start admin delete room: {}", adminDeleteInput);
-        if(adminDeleteInput.getID().equalsIgnoreCase("5A")){
-            throw new InputException("Invalid room for deletion");
+        Optional<RoomEntity> roomEntityOptional= roomRepository.findById(adminDeleteInput.getID());
+        if(roomEntityOptional.isEmpty()){
+            throw new InputException("Room not found");
         }
+        roomRepository.deleteById(adminDeleteInput.getID());
         AdminDeleteOutput adminDeleteOutput = AdminDeleteOutput.builder()
-                .message("Successfully delete room with ID: "+adminDeleteInput.getID())
+                .message("Successfully deleted room with ID: "+adminDeleteInput.getID())
                 .build();
         log.info("End admin delete room: {}", adminDeleteOutput);
         return adminDeleteOutput;
     }
+
 }

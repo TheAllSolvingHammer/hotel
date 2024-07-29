@@ -12,4 +12,5 @@ import java.util.UUID;
 @Builder
 public class AdminCreateOutput {
     private UUID ID;
+    private String roomNumber;
 }
