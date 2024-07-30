@@ -10,23 +10,23 @@ import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegister
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.AvailableInput;
-import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.AvailableOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.book.BookInput;
-import com.tinqinacademy.hotel.api.model.operations.user.book.BookOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.displayroom.DisplayRoomInput;
-import com.tinqinacademy.hotel.api.model.operations.user.displayroom.DisplayRoomOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterInput;
-import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookInput;
-import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableInput;
+import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookInput;
+import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomInput;
+import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterInput;
+import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookInput;
+import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookOutput;
 
 public interface RoomSystemService {
-    AvailableOutput checkAvailability(AvailableInput availableInput);
-    DisplayRoomOutput displayRoom(DisplayRoomInput displayRoomInput);
-    BookOutput bookRoom(BookInput bookInput);
-    UnbookOutput unBookRoom(UnbookInput unBookInput);
-    RegisterOutput registerPerson(RegisterInput registerInput);
+    UserAvailableOutput checkAvailability(UserAvailableInput userAvailableInput);
+    UserDisplayRoomOutput displayRoom(UserDisplayRoomInput userDisplayRoomInput);
+    UserBookOutput bookRoom(UserBookInput userBookInput);
+    UserUnbookOutput unBookRoom(UserUnbookInput unBookInputUser);
+    UserRegisterOutput registerPerson(UserRegisterInput userRegisterInput);
     AdminRegisterOutput adminRegister(AdminRegisterInput adminInfoInput);
     AdminCreateOutput adminCreate(AdminCreateInput adminCreateInput);
     AdminUpdateOutput adminUpdate(AdminUpdateInput adminUpdateInput);

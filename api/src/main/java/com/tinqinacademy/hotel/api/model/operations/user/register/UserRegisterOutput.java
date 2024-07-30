@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.model.operations.user.register;
 
+import com.tinqinacademy.hotel.api.base.OperationOutput;
 import lombok.*;
 
 
@@ -9,6 +10,6 @@ import lombok.*;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder
-public class RegisterOutput {
+public class UserRegisterOutput implements OperationOutput {
   private String message;
 }

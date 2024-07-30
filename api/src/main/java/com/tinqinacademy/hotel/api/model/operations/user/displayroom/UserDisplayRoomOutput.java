@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.model.operations.user.displayroom;
 
+import com.tinqinacademy.hotel.api.base.OperationOutput;
 import com.tinqinacademy.hotel.api.enums.BathRoom;
 import com.tinqinacademy.hotel.api.enums.Bed;
 import lombok.*;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder
-public class DisplayRoomOutput {
+public class UserDisplayRoomOutput implements OperationOutput {
     private UUID ID;
     private BigDecimal price;
     private Integer floor;

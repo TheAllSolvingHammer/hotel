@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.api.model.operations.admin.create;
 
-import com.tinqinacademy.hotel.api.model.contracts.AdminOperation;
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder
-public class AdminCreateInput implements AdminOperation{
+public class AdminCreateInput implements OperationInput {
     @NotBlank
     private String roomNumber;
     private List<String> bedType;

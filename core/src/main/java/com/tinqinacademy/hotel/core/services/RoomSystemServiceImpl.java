@@ -13,17 +13,16 @@ import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegister
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.AvailableInput;
-import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.AvailableOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.book.BookInput;
-import com.tinqinacademy.hotel.api.model.operations.user.book.BookOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.displayroom.DisplayRoomInput;
-import com.tinqinacademy.hotel.api.model.operations.user.displayroom.DisplayRoomOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterInput;
-import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.register.UserItem;
-import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookInput;
-import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableInput;
+import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookInput;
+import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomInput;
+import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterInput;
+import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookInput;
+import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookOutput;
 import com.tinqinacademy.hotel.persistence.entities.*;
 import com.tinqinacademy.hotel.persistence.enums.BathTypes;
 import com.tinqinacademy.hotel.persistence.enums.BedTypes;
@@ -36,7 +35,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Slf4j
@@ -52,36 +50,36 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
 
     @Override
-    public AvailableOutput checkAvailability(AvailableInput availableInput) {
-        log.info("Start check availability: {}", availableInput);
-        Bed bed= Bed.getByCode(availableInput.getBed());
+    public UserAvailableOutput checkAvailability(UserAvailableInput userAvailableInput) {
+        log.info("Start check availability: {}", userAvailableInput);
+        Bed bed= Bed.getByCode(userAvailableInput.getBed());
         if(bed.equals(Bed.UNKNOWN)){
-            log.info("Finished bed check. Bed is unknown{}", availableInput.getBed());
+            log.info("Finished bed check. Bed is unknown{}", userAvailableInput.getBed());
             throw new InputException("Bed is unknown");
         }
-        List<UUID> rooms =roomRepository.findByCustom(availableInput.getEndDate()
-                ,availableInput.getStartDate()
-                ,availableInput.getBathRoom().toString().toUpperCase()
-                ,availableInput.getBed().toUpperCase());
-        AvailableOutput availableOutput= AvailableOutput.builder()
+        List<UUID> rooms =roomRepository.findByCustom(userAvailableInput.getEndDate()
+                , userAvailableInput.getStartDate()
+                , userAvailableInput.getBathRoom().toString().toUpperCase()
+                , userAvailableInput.getBed().toUpperCase());
+        UserAvailableOutput userAvailableOutput = UserAvailableOutput.builder()
                 .id(rooms)
                 .build();
-        log.info("End check availability: {}", availableOutput);
-        return availableOutput;
+        log.info("End check availability: {}", userAvailableOutput);
+        return userAvailableOutput;
     }
 
     @Override
-    public DisplayRoomOutput displayRoom(DisplayRoomInput displayRoomInput) {
-        log.info("Start display room: {}", displayRoomInput);
+    public UserDisplayRoomOutput displayRoom(UserDisplayRoomInput userDisplayRoomInput) {
+        log.info("Start display room: {}", userDisplayRoomInput);
         //todo
         //fixme
 
-        RoomEntity roomEntity = roomRepository.getReferenceById(displayRoomInput.getRoomID());
+        RoomEntity roomEntity = roomRepository.getReferenceById(userDisplayRoomInput.getRoomID());
         List<ReservationEntity> reservationEntityList=reservationRepository.findByRoomId(roomEntity.getId());
         List<LocalDate> startDates=reservationEntityList.stream().map(ReservationEntity::getStartDate).toList();
         List<LocalDate> endDates=reservationEntityList.stream().map(ReservationEntity::getEndDate).toList();
 
-        DisplayRoomOutput displayRoomOutput = DisplayRoomOutput.builder()
+        UserDisplayRoomOutput userDisplayRoomOutput = UserDisplayRoomOutput.builder()
                 .ID(roomEntity.getId())
                 .price(roomEntity.getPrice())
                 .floor(roomEntity.getFloor())
@@ -89,81 +87,81 @@ public class RoomSystemServiceImpl implements RoomSystemService {
                 .bathRoom(BathRoom.getByCode(roomEntity.getBathTypes().toString()))
                 .datesOccupied(List.of(startDates,endDates))
                 .build();
-        log.info("End display room: {}", displayRoomOutput);
-        return displayRoomOutput;
+        log.info("End display room: {}", userDisplayRoomOutput);
+        return userDisplayRoomOutput;
 
     }
 
     @Override
-    public BookOutput bookRoom(BookInput bookInput) {
-        log.info("Start book room: {}", bookInput);
-        Long year=ChronoUnit.YEARS.between(bookInput.getDateOfBirth(), LocalDate.now());
+    public UserBookOutput bookRoom(UserBookInput userBookInput) {
+        log.info("Start book room: {}", userBookInput);
+        Long year=ChronoUnit.YEARS.between(userBookInput.getDateOfBirth(), LocalDate.now());
         if(year<18L){
             throw new InputException("User is not old enough");
         }
-        Long daysAtHotel=ChronoUnit.DAYS.between(bookInput.getStartDate(),bookInput.getEndDate());
-        if(userRepository.getAllEmails().contains(bookInput.getEmail())){
+        Long daysAtHotel=ChronoUnit.DAYS.between(userBookInput.getStartDate(), userBookInput.getEndDate());
+        if(userRepository.getAllEmails().contains(userBookInput.getEmail())){
             throw new InputException("The following email is taken!");
         }
-        List<UUID> roomIDs=reservationRepository.findBetweenStartDateAndEndDate(bookInput.getStartDate(),bookInput.getEndDate());
-        if(roomIDs.contains(bookInput.getRoomID())){
+        List<UUID> roomIDs=reservationRepository.findBetweenStartDateAndEndDate(userBookInput.getStartDate(), userBookInput.getEndDate());
+        if(roomIDs.contains(userBookInput.getRoomID())){
             throw new InputException("The following roomID is taken for that period");
         }
 
        UserEntity userEntity = UserEntity.builder()
-                .email(bookInput.getEmail())
-                .firstName(bookInput.getFirstName())
-                .lastName(bookInput.getLastName())
-                .phoneNumber(bookInput.getPhoneNo())
-                .birthday(bookInput.getDateOfBirth())
+                .email(userBookInput.getEmail())
+                .firstName(userBookInput.getFirstName())
+                .lastName(userBookInput.getLastName())
+                .phoneNumber(userBookInput.getPhoneNo())
+                .birthday(userBookInput.getDateOfBirth())
                 .build();
         userRepository.save(userEntity);
-        RoomEntity roomEntity = roomRepository.getReferenceById(bookInput.getRoomID());
+        RoomEntity roomEntity = roomRepository.getReferenceById(userBookInput.getRoomID());
 
 
         ReservationEntity reservationEntity = ReservationEntity.builder()
-                .room(roomRepository.getReferenceById(bookInput.getRoomID()))
-                .price(BigDecimal.valueOf(daysAtHotel).multiply(roomRepository.getReferenceById(bookInput.getRoomID()).getPrice()))
-                .endDate(bookInput.getEndDate())
-                .startDate(bookInput.getStartDate())
+                .room(roomRepository.getReferenceById(userBookInput.getRoomID()))
+                .price(BigDecimal.valueOf(daysAtHotel).multiply(roomRepository.getReferenceById(userBookInput.getRoomID()).getPrice()))
+                .endDate(userBookInput.getEndDate())
+                .startDate(userBookInput.getStartDate())
                 .room(roomEntity)
                 .user(userEntity)
                 .build();
 
         reservationRepository.save(reservationEntity);
-        BookOutput bookOutput = BookOutput.builder()
+        UserBookOutput userBookOutput = UserBookOutput.builder()
                 .message("Successfully booked a room")
                 .build();
-        log.info("End book room: {}", bookOutput);
-        return bookOutput;
+        log.info("End book room: {}", userBookOutput);
+        return userBookOutput;
     }
 
     @Override
-    public UnbookOutput unBookRoom(UnbookInput unBookInput) {
-        log.info("Start unbook room: {}", unBookInput);
-        reservationRepository.deleteById(unBookInput.getBookId());
-        UnbookOutput unbookOutput = UnbookOutput.builder()
+    public UserUnbookOutput unBookRoom(UserUnbookInput unBookInputUser) {
+        log.info("Start unbook room: {}", unBookInputUser);
+        reservationRepository.deleteById(unBookInputUser.getBookId());
+        UserUnbookOutput userUnbookOutput = UserUnbookOutput.builder()
                 .message("Successfully unbooked a room")
                 .build();
-        log.info("End unbook room: {}", unbookOutput);
-        return unbookOutput;
+        log.info("End unbook room: {}", userUnbookOutput);
+        return userUnbookOutput;
     }
 
     @Override
-    public RegisterOutput registerPerson(RegisterInput registerInput) {
-       log.info("Start register person: {}", registerInput);
-       if(roomRepository.findByRoomNumber(registerInput.getRoomNumber()).isEmpty()){
+    public UserRegisterOutput registerPerson(UserRegisterInput userRegisterInput) {
+       log.info("Start register person: {}", userRegisterInput);
+       if(roomRepository.findByRoomNumber(userRegisterInput.getRoomNumber()).isEmpty()){
            throw new InputException("Room number is wrong");
        }
-       UUID roomID=roomRepository.findByRoomNumber(registerInput.getRoomNumber())
+       UUID roomID=roomRepository.findByRoomNumber(userRegisterInput.getRoomNumber())
                .get()
                .getId();
-       Optional<UUID> reservationIDOptional= reservationRepository.findByRoomIDAndStartDateAndEndDate(roomID.toString(),registerInput.getStartDate(),registerInput.getEndDate());
+       Optional<UUID> reservationIDOptional= reservationRepository.findByRoomIDAndStartDateAndEndDate(roomID.toString(), userRegisterInput.getStartDate(), userRegisterInput.getEndDate());
        if(reservationIDOptional.isEmpty()){
            throw new InputException("Reservation ID is wrong");
        }
        ReservationEntity reservationEntity = reservationRepository.getReferenceById(reservationIDOptional.get());
-       List<GuestEntity> guestEntities = registerInput.getUsers().stream().map(e -> GuestEntity.builder()
+       List<GuestEntity> guestEntities = userRegisterInput.getUsers().stream().map(e -> GuestEntity.builder()
                .authority(e.getAuthority())
                .birthDate(e.getDateOfBirth())
                .firstName(e.getFirstName())
@@ -176,11 +174,11 @@ public class RoomSystemServiceImpl implements RoomSystemService {
        guestRepository.saveAll(guestEntities);
        reservationEntity.setGuests(guestEntities);
        reservationRepository.flush();
-       RegisterOutput registerOutput = RegisterOutput.builder()
+       UserRegisterOutput userRegisterOutput = UserRegisterOutput.builder()
                 .message("Successfully registered room")
                 .build();
-       log.info("End register person: {}", registerOutput);
-        return registerOutput;
+       log.info("End register person: {}", userRegisterOutput);
+        return userRegisterOutput;
     }
 
     @Override

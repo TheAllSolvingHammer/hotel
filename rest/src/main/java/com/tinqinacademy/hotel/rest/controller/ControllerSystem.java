@@ -12,16 +12,16 @@ import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegister
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.AvailableInput;
-import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.AvailableOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.book.BookInput;
-import com.tinqinacademy.hotel.api.model.operations.user.book.BookOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.displayroom.DisplayRoomInput;
-import com.tinqinacademy.hotel.api.model.operations.user.displayroom.DisplayRoomOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterInput;
-import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterOutput;
-import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookInput;
-import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableInput;
+import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookInput;
+import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomInput;
+import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterInput;
+import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookInput;
+import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookOutput;
 import com.tinqinacademy.hotel.core.services.RoomSystemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -53,17 +53,17 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
     @Operation(summary = "Checks availability")
-    public ResponseEntity<AvailableOutput> checkAvailable(@RequestParam LocalDate startDate
+    public ResponseEntity<UserAvailableOutput> checkAvailable(@RequestParam LocalDate startDate
             , @RequestParam LocalDate endDate
             , @RequestParam String bed
             , @RequestParam String bathRoomType) {
-        AvailableInput availableInput = AvailableInput.builder()
+        UserAvailableInput userAvailableInput = UserAvailableInput.builder()
                 .startDate(startDate)
                 .endDate(endDate)
                 .bed(bed)
                 .bathRoom(BathRoom.getByCode(bathRoomType))
                 .build();
-        return ResponseEntity.ok(roomSystemService.checkAvailability(availableInput));
+        return ResponseEntity.ok(roomSystemService.checkAvailability(userAvailableInput));
 
     }
     @GetMapping("hotel/{roomID}")
@@ -73,11 +73,11 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
     @Operation(summary = "Display all info regarding a room")
-    public ResponseEntity<DisplayRoomOutput> display(@PathVariable UUID roomID){
-        DisplayRoomInput displayRoomInput = DisplayRoomInput.builder()
+    public ResponseEntity<UserDisplayRoomOutput> display(@PathVariable UUID roomID){
+        UserDisplayRoomInput userDisplayRoomInput = UserDisplayRoomInput.builder()
                 .roomID(roomID)
                 .build();
-        return ResponseEntity.ok(roomSystemService.displayRoom(displayRoomInput));
+        return ResponseEntity.ok(roomSystemService.displayRoom(userDisplayRoomInput));
 
     }
     @PostMapping("hotel/{roomID}")
@@ -87,11 +87,11 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
     @Operation(summary = "Makes a booking")
-    public ResponseEntity<BookOutput> book(@PathVariable UUID roomID,@Valid @RequestBody BookInput request){
-    BookInput bookInput = request.toBuilder()
+    public ResponseEntity<UserBookOutput> book(@PathVariable UUID roomID, @Valid @RequestBody UserBookInput request){
+    UserBookInput userBookInput = request.toBuilder()
             .roomID(roomID)
             .build();
-    return ResponseEntity.ok(roomSystemService.bookRoom(bookInput));
+    return ResponseEntity.ok(roomSystemService.bookRoom(userBookInput));
 
     }
 
@@ -103,11 +103,11 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Removes a booking")
-    public ResponseEntity<UnbookOutput> unbook(@PathVariable UUID bookingID){
-        UnbookInput unbookInput = UnbookInput.builder()
+    public ResponseEntity<UserUnbookOutput> unbook(@PathVariable UUID bookingID){
+        UserUnbookInput userUnbookInput = UserUnbookInput.builder()
                 .bookId(bookingID)
                 .build();
-        return ResponseEntity.ok(roomSystemService.unBookRoom(unbookInput));
+        return ResponseEntity.ok(roomSystemService.unBookRoom(userUnbookInput));
 
     }
 
@@ -119,8 +119,8 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Registers a person")
-    public ResponseEntity<RegisterOutput> register(@Valid @RequestBody RegisterInput registerInput){
-        return ResponseEntity.ok(roomSystemService.registerPerson(registerInput));
+    public ResponseEntity<UserRegisterOutput> register(@Valid @RequestBody UserRegisterInput userRegisterInput){
+        return ResponseEntity.ok(roomSystemService.registerPerson(userRegisterInput));
     }
 
     @GetMapping("system/register")

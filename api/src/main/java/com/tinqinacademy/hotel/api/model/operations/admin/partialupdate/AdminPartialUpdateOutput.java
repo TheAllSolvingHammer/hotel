@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.model.operations.admin.partialupdate;
 
+import com.tinqinacademy.hotel.api.base.OperationOutput;
 import lombok.*;
 
 @Getter
@@ -8,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder
-public class AdminPartialUpdateOutput {
+public class AdminPartialUpdateOutput implements OperationOutput {
     private String ID;
 }

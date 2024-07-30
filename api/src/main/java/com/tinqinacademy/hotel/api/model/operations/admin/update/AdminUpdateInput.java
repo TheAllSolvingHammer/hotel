@@ -1,13 +1,10 @@
 package com.tinqinacademy.hotel.api.model.operations.admin.update;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tinqinacademy.hotel.api.enums.BathRoom;
-import com.tinqinacademy.hotel.api.enums.Bed;
-import com.tinqinacademy.hotel.api.model.contracts.AdminOperation;
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class AdminUpdateInput implements AdminOperation {
+public class AdminUpdateInput implements OperationInput{
     @JsonIgnore
     private UUID roomID;
     private String roomNumber;

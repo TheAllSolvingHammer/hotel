@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.model.operations.admin.register;
 
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder
-public class AdminRegisterInput {
+public class AdminRegisterInput implements OperationInput {
     @FutureOrPresent(message = "Start date can not be in the past")
     private LocalDate startDate;
     @FutureOrPresent(message = "End date can not be in the past")

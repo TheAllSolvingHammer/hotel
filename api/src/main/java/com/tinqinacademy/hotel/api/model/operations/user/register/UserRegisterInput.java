@@ -1,17 +1,12 @@
-package com.tinqinacademy.hotel.api.model.operations.user.availablecheck;
+package com.tinqinacademy.hotel.api.model.operations.user.register;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.tinqinacademy.hotel.api.enums.BathRoom;
-import com.tinqinacademy.hotel.api.enums.Bed;
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
-
 
 @Getter
 @Setter
@@ -19,12 +14,12 @@ import java.util.List;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder
-public class AvailableInput {
+public class UserRegisterInput implements OperationInput {
+    @NotBlank(message = "Room name is blank")
+    private String roomNumber;
     @FutureOrPresent(message = "Start date can not be in the past")
     private LocalDate startDate;
     @FutureOrPresent(message = "End date can not be in the past")
     private LocalDate endDate;
-    private BathRoom bathRoom;
-    @NotBlank(message = "bed is empty")
-    private String bed;
+    List<UserItem> users;
 }

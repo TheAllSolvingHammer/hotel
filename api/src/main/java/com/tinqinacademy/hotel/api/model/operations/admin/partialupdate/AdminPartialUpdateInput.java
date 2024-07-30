@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.api.model.operations.admin.partialupdate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import com.tinqinacademy.hotel.api.enums.BathRoom;
 import com.tinqinacademy.hotel.api.enums.Bed;
 import jakarta.validation.constraints.*;
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder(toBuilder = true)
-public class AdminPartialUpdateInput {
+public class AdminPartialUpdateInput implements OperationInput {
     @Positive(message = "Bed count can not be negative or zero")
     @Max(value=5, message = "Can not place this many beds in a room, right?")
     private Integer bedCount;

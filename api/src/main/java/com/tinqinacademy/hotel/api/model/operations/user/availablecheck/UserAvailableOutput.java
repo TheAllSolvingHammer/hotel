@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.api.model.operations.user.availablecheck;
 
 
+import com.tinqinacademy.hotel.api.base.OperationOutput;
 import lombok.*;
 
 import java.util.List;
@@ -12,6 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder
-public class AvailableOutput {
+public class UserAvailableOutput implements OperationOutput {
    private List<UUID> id;
 }

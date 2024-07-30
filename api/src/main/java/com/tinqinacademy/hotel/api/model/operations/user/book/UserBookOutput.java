@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.model.operations.user.book;
 
+import com.tinqinacademy.hotel.api.base.OperationOutput;
 import lombok.*;
 
 @Getter
@@ -8,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder(toBuilder = true)
-public class BookOutput {
+public class UserBookOutput implements OperationOutput {
     private String message;
 }

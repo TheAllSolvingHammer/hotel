@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.api.model.operations.user.book;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -13,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder(toBuilder = true)
-public class BookInput {
+public class UserBookInput implements OperationInput {
     @JsonIgnore
     private UUID roomID;
     @FutureOrPresent(message = "Start date can not be in the past")
