@@ -7,6 +7,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,11 +16,10 @@ import java.util.List;
 @AllArgsConstructor()
 @Builder
 public class DisplayRoomOutput {
-    private String ID;
+    private UUID ID;
     private BigDecimal price;
     private Integer floor;
-    private Bed bedSize;
+    private List<Bed> bedSize;
     private BathRoom bathRoom;
-    private Integer bedCount;
-    private List<LocalDate> datesOccupied;
+    private List<List<LocalDate>> datesOccupied;
 }

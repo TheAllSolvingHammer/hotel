@@ -21,12 +21,10 @@ import com.tinqinacademy.hotel.api.model.operations.user.displayroom.DisplayRoom
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.DisplayRoomOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterInput;
 import com.tinqinacademy.hotel.api.model.operations.user.register.RegisterOutput;
+import com.tinqinacademy.hotel.api.model.operations.user.register.UserItem;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UnbookOutput;
-import com.tinqinacademy.hotel.persistence.entities.BedEntity;
-import com.tinqinacademy.hotel.persistence.entities.ReservationEntity;
-import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
-import com.tinqinacademy.hotel.persistence.entities.UserEntity;
+import com.tinqinacademy.hotel.persistence.entities.*;
 import com.tinqinacademy.hotel.persistence.enums.BathTypes;
 import com.tinqinacademy.hotel.persistence.enums.BedTypes;
 import com.tinqinacademy.hotel.persistence.repositorynew.*;
@@ -39,6 +37,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
 @AllArgsConstructor
 @Slf4j
 @Service
@@ -76,15 +75,19 @@ public class RoomSystemServiceImpl implements RoomSystemService {
         log.info("Start display room: {}", displayRoomInput);
         //todo
         //fixme
+
+        RoomEntity roomEntity = roomRepository.getReferenceById(displayRoomInput.getRoomID());
+        List<ReservationEntity> reservationEntityList=reservationRepository.findByRoomId(roomEntity.getId());
+        List<LocalDate> startDates=reservationEntityList.stream().map(ReservationEntity::getStartDate).toList();
+        List<LocalDate> endDates=reservationEntityList.stream().map(ReservationEntity::getEndDate).toList();
+
         DisplayRoomOutput displayRoomOutput = DisplayRoomOutput.builder()
-                .ID("S123")
-                .price(new BigDecimal("3424"))
-                .floor(4)
-                .bedSize(Bed.getByCode("singlekingsize"))
-                .bathRoom(BathRoom.getByCode("private"))
-                .bedCount(2)
-                .datesOccupied(List.of(LocalDate.of(2021,2,16)
-                ,LocalDate.of(2001,9,11)))
+                .ID(roomEntity.getId())
+                .price(roomEntity.getPrice())
+                .floor(roomEntity.getFloor())
+                .bedSize(roomEntity.getBedList().stream().map(bed -> Bed.getByCode(bed.getType().toString())).filter(bed1 -> !bed1.equals(Bed.UNKNOWN)).toList())
+                .bathRoom(BathRoom.getByCode(roomEntity.getBathTypes().toString()))
+                .datesOccupied(List.of(startDates,endDates))
                 .build();
         log.info("End display room: {}", displayRoomOutput);
         return displayRoomOutput;
@@ -98,24 +101,36 @@ public class RoomSystemServiceImpl implements RoomSystemService {
         if(year<18L){
             throw new InputException("User is not old enough");
         }
-        Long daysAtHotel=ChronoUnit.DAYS.between(bookInput.getEndDate(),bookInput.getStartDate());
-        UserEntity userEntity = UserEntity.builder()
-                .id(UUID.randomUUID())
+        Long daysAtHotel=ChronoUnit.DAYS.between(bookInput.getStartDate(),bookInput.getEndDate());
+        if(userRepository.getAllEmails().contains(bookInput.getEmail())){
+            throw new InputException("The following email is taken!");
+        }
+        List<UUID> roomIDs=reservationRepository.findBetweenStartDateAndEndDate(bookInput.getStartDate(),bookInput.getEndDate());
+        if(roomIDs.contains(bookInput.getRoomID())){
+            throw new InputException("The following roomID is taken for that period");
+        }
+
+       UserEntity userEntity = UserEntity.builder()
                 .email(bookInput.getEmail())
                 .firstName(bookInput.getFirstName())
                 .lastName(bookInput.getLastName())
                 .phoneNumber(bookInput.getPhoneNo())
                 .birthday(bookInput.getDateOfBirth())
                 .build();
-
+        userRepository.save(userEntity);
+        RoomEntity roomEntity = roomRepository.getReferenceById(bookInput.getRoomID());
 
 
         ReservationEntity reservationEntity = ReservationEntity.builder()
                 .room(roomRepository.getReferenceById(bookInput.getRoomID()))
-                .price(BigDecimal.valueOf(daysAtHotel)*roomRepository.getReferenceById(bookInput.getRoomID()).getPrice()));
+                .price(BigDecimal.valueOf(daysAtHotel).multiply(roomRepository.getReferenceById(bookInput.getRoomID()).getPrice()))
+                .endDate(bookInput.getEndDate())
+                .startDate(bookInput.getStartDate())
+                .room(roomEntity)
+                .user(userEntity)
                 .build();
 
-
+        reservationRepository.save(reservationEntity);
         BookOutput bookOutput = BookOutput.builder()
                 .message("Successfully booked a room")
                 .build();
@@ -126,6 +141,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     @Override
     public UnbookOutput unBookRoom(UnbookInput unBookInput) {
         log.info("Start unbook room: {}", unBookInput);
+        reservationRepository.deleteById(unBookInput.getBookId());
         UnbookOutput unbookOutput = UnbookOutput.builder()
                 .message("Successfully unbooked a room")
                 .build();
@@ -135,20 +151,42 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public RegisterOutput registerPerson(RegisterInput registerInput) {
-        log.info("Start register person: {}", registerInput);
-        RegisterOutput registerOutput = RegisterOutput.builder()
+       log.info("Start register person: {}", registerInput);
+       if(roomRepository.findByRoomNumber(registerInput.getRoomNumber()).isEmpty()){
+           throw new InputException("Room number is wrong");
+       }
+       UUID roomID=roomRepository.findByRoomNumber(registerInput.getRoomNumber())
+               .get()
+               .getId();
+       Optional<UUID> reservationIDOptional= reservationRepository.findByRoomIDAndStartDateAndEndDate(roomID.toString(),registerInput.getStartDate(),registerInput.getEndDate());
+       if(reservationIDOptional.isEmpty()){
+           throw new InputException("Reservation ID is wrong");
+       }
+       ReservationEntity reservationEntity = reservationRepository.getReferenceById(reservationIDOptional.get());
+       List<GuestEntity> guestEntities = registerInput.getUsers().stream().map(e -> GuestEntity.builder()
+               .authority(e.getAuthority())
+               .birthDate(e.getDateOfBirth())
+               .firstName(e.getFirstName())
+               .lastName(e.getLastName())
+               .validity(e.getValidity())
+               .issueDate(e.getIssueDate())
+               .idCardNumber(e.getIdNumber())
+               .phoneNumber(e.getPhone())
+               .build()).toList();
+       guestRepository.saveAll(guestEntities);
+       reservationEntity.setGuests(guestEntities);
+       reservationRepository.flush();
+       RegisterOutput registerOutput = RegisterOutput.builder()
                 .message("Successfully registered room")
                 .build();
-        log.info("End register person: {}", registerOutput);
+       log.info("End register person: {}", registerOutput);
         return registerOutput;
     }
 
     @Override
     public AdminRegisterOutput adminRegister(AdminRegisterInput adminInfoInput) {
         log.info("Start admin info: {}", adminInfoInput);
-        if(adminInfoInput.getRoomID().equalsIgnoreCase("5A")){
-            throw new InputException("Invalid room for registration");
-        }
+
         AdminRegisterOutput adminRegisterOutput = AdminRegisterOutput.builder()
                 .data(new ArrayList<>(Arrays.asList("1","2","3")))
                 .startDate(adminInfoInput.getStartDate())

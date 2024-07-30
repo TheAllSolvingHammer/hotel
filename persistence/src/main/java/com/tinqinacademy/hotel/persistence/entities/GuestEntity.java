@@ -26,6 +26,9 @@ public class GuestEntity {
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
+    @Column(name="phone_number",nullable = false,length=14)
+    private String phoneNumber;
+
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 

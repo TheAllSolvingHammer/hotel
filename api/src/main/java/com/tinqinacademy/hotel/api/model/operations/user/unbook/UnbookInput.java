@@ -2,6 +2,8 @@ package com.tinqinacademy.hotel.api.model.operations.user.unbook;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @ToString
@@ -9,5 +11,5 @@ import lombok.*;
 @AllArgsConstructor()
 @Builder
 public class UnbookInput {
-    private String bookId;
+    private UUID bookId;
 }

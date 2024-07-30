@@ -103,7 +103,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Removes a booking")
-    public ResponseEntity<UnbookOutput> unbook(@PathVariable String bookingID){
+    public ResponseEntity<UnbookOutput> unbook(@PathVariable UUID bookingID){
         UnbookInput unbookInput = UnbookInput.builder()
                 .bookId(bookingID)
                 .build();

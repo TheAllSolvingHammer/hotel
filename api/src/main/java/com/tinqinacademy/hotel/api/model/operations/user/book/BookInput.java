@@ -15,7 +15,6 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 public class BookInput {
     @JsonIgnore
-    @NotBlank(message = "Room ID can not be null")
     private UUID roomID;
     @FutureOrPresent(message = "Start date can not be in the past")
     private LocalDate startDate;

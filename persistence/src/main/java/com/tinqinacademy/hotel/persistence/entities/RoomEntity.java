@@ -44,11 +44,4 @@ public class RoomEntity {
     private List<BedEntity> bedList;
 
 
-    public Boolean addBedEntity(BedEntity bedEntity) {
-        return this.bedList.add(bedEntity);
-    }
-    public Boolean removeBedEntity(BedEntity bedEntity) {
-        return this.bedList.remove(bedEntity);
-    }
-
 }

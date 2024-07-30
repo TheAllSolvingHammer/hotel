@@ -32,7 +32,7 @@ public class ReservationEntity {
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = RoomEntity.class)
     private RoomEntity room;
 
     @ManyToOne
