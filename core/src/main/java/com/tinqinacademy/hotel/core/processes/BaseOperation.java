@@ -10,29 +10,23 @@ import io.vavr.control.Either;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.Predicates.instanceOf;
 @Slf4j
-public abstract class BaseOperation<T extends OperationOutput,E extends OperationInput> implements OperationProcessor<T,E> {
-    @Override
-    public Either<ErrorsProcessor, T> process(E input) {
-        return Try.of(() -> execute(input))
-                .toEither()
-                .mapLeft(throwable -> API.Match(throwable).of(
-                        Case($(instanceOf(InputException.class)), e -> {
-                            log.error("Invalid input: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        })
-                        // other exceptions
-                        // Case($(instanceOf()))
-                ));
-    }
+public abstract class BaseOperation<T extends OperationOutput,E extends OperationInput>  implements OperationProcessor<T,E> {
 
-    protected abstract T execute(E input) throws Exception;
+//    public ResponseEntity<> handleOperation(T input) {
+//        Either<ErrorsProcessor, E> result = process(input);
+//
+//        return result.fold(
+//                error -> ResponseEntity.status(error.getHttpStatus())
+//                        .body(error),
+//                ResponseEntity::ok
+//        );
+//    }
+
+
 }

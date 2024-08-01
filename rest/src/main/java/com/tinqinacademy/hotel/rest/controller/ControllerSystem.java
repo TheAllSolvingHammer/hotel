@@ -12,6 +12,7 @@ import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegister
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableInput;
+import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookOutput;
@@ -21,12 +22,14 @@ import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterIn
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookOutput;
+import com.tinqinacademy.hotel.core.processes.UserAvailableOperationImpl;
 import com.tinqinacademy.hotel.core.services.RoomSystemService;
 import com.tinqinacademy.hotel.rest.enums.MappingsConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,18 +37,14 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class ControllerSystem {
     private final RoomSystemService roomSystemService;
+    private final UserAvailableOperation userAvailableOperation;
     private final ObjectMapper objectMapper;
-    @Autowired
-    public ControllerSystem(final RoomSystemService roomSystemService,final ObjectMapper objectMapper) {
-        this.roomSystemService = roomSystemService;
-        this.objectMapper = objectMapper;
 
-    }
     @GetMapping(MappingsConstants.userAvailability)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is available"),

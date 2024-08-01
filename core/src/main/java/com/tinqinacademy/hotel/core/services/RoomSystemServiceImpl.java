@@ -68,8 +68,6 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     @Override
     public UserDisplayRoomOutput displayRoom(UserDisplayRoomInput userDisplayRoomInput) {
         log.info("Start display room: {}", userDisplayRoomInput);
-        //todo
-        //fixme
 
         RoomEntity roomEntity = roomRepository.getReferenceById(userDisplayRoomInput.getRoomID());
         List<ReservationEntity> reservationEntityList=reservationRepository.findByRoomId(roomEntity.getId());
