@@ -27,7 +27,7 @@ import com.tinqinacademy.hotel.persistence.entities.*;
 import com.tinqinacademy.hotel.persistence.enums.BathTypes;
 import com.tinqinacademy.hotel.persistence.enums.BedTypes;
 import com.tinqinacademy.hotel.persistence.repositorynew.*;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.time.temporal.ChronoUnit;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 @Service
 public class RoomSystemServiceImpl implements RoomSystemService {
@@ -53,10 +53,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
     public UserAvailableOutput checkAvailability(UserAvailableInput userAvailableInput) {
         log.info("Start check availability: {}", userAvailableInput);
         Bed bed= Bed.getByCode(userAvailableInput.getBed());
-        if(bed.equals(Bed.UNKNOWN)){
-            log.info("Finished bed check. Bed is unknown{}", userAvailableInput.getBed());
-            throw new InputException("Bed is unknown");
-        }
+
         List<UUID> rooms =roomRepository.findByCustom(userAvailableInput.getEndDate()
                 , userAvailableInput.getStartDate()
                 , userAvailableInput.getBathRoom().toString().toUpperCase()
@@ -275,6 +272,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
         updateEntity.setRoomNumber(adminUpdateInput.getRoomNumber());
         updateEntity.setBedList(entities);
         log.info("Roomentity,{}", updateEntity);
+
         roomRepository.flush();
         AdminUpdateOutput adminUpdateOutput = AdminUpdateOutput.builder()
                 .ID(updateEntity.getId())

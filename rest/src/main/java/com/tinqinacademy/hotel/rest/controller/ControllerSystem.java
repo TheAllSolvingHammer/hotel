@@ -1,7 +1,6 @@
 package com.tinqinacademy.hotel.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tinqinacademy.hotel.api.enums.BathRoom;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.delete.AdminDeleteInput;
@@ -23,6 +22,7 @@ import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOu
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookOutput;
 import com.tinqinacademy.hotel.core.services.RoomSystemService;
+import com.tinqinacademy.hotel.rest.enums.MappingsConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -46,7 +46,7 @@ public class ControllerSystem {
         this.objectMapper = objectMapper;
 
     }
-    @GetMapping("hotel/available")
+    @GetMapping(MappingsConstants.userAvailability)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is available"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
@@ -61,12 +61,13 @@ public class ControllerSystem {
                 .startDate(startDate)
                 .endDate(endDate)
                 .bed(bed)
-                .bathRoom(BathRoom.getByCode(bathRoomType))
+                .bathRoom(bathRoomType)
                 .build();
+
         return ResponseEntity.ok(roomSystemService.checkAvailability(userAvailableInput));
 
     }
-    @GetMapping("hotel/{roomID}")
+    @GetMapping(MappingsConstants.userDisplay)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is displayed"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
@@ -80,7 +81,7 @@ public class ControllerSystem {
         return ResponseEntity.ok(roomSystemService.displayRoom(userDisplayRoomInput));
 
     }
-    @PostMapping("hotel/{roomID}")
+    @PostMapping(MappingsConstants.userBook)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is available"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
@@ -95,7 +96,7 @@ public class ControllerSystem {
 
     }
 
-    @DeleteMapping("hotel/{bookingID}")
+    @DeleteMapping(MappingsConstants.userUnBook)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is available"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
@@ -103,15 +104,15 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Removes a booking")
-    public ResponseEntity<UserUnbookOutput> unbook(@PathVariable UUID bookingID){
+    public ResponseEntity<UserUnbookOutput> unbook(@PathVariable String reservationID){
         UserUnbookInput userUnbookInput = UserUnbookInput.builder()
-                .bookId(bookingID)
+                .bookId(UUID.fromString(reservationID))
                 .build();
         return ResponseEntity.ok(roomSystemService.unBookRoom(userUnbookInput));
 
     }
 
-    @PostMapping("hotel/register")
+    @PostMapping(MappingsConstants.userRegister )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is registered"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
@@ -123,7 +124,7 @@ public class ControllerSystem {
         return ResponseEntity.ok(roomSystemService.registerPerson(userRegisterInput));
     }
 
-    @GetMapping("system/register")
+    @GetMapping(MappingsConstants.adminRegister)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is registered by system"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
@@ -156,7 +157,7 @@ public class ControllerSystem {
         return ResponseEntity.ok(roomSystemService.adminRegister(adminRegisterInput));
     }
 
-    @PostMapping("/system/room")
+    @PostMapping(MappingsConstants.adminCreate)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is create by system"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
@@ -168,7 +169,7 @@ public class ControllerSystem {
         return ResponseEntity.ok(roomSystemService.adminCreate(adminCreateInput));
     }
 
-    @PutMapping("/system/room/{roomID}")
+    @PutMapping(MappingsConstants.adminUpdate)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is updated by system"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
@@ -183,7 +184,7 @@ public class ControllerSystem {
         return ResponseEntity.ok(roomSystemService.adminUpdate(adminUpdateInput));
     }
 
-    @PatchMapping("/system/room/{roomID}")
+    @PatchMapping(MappingsConstants.adminPartialUpdate)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is updated by system"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
@@ -197,7 +198,7 @@ public class ControllerSystem {
                 .build();
         return ResponseEntity.ok(roomSystemService.adminPartialUpdate(adminPartialUpdateInput));
     }
-    @DeleteMapping("system/room/{roomID}")
+    @DeleteMapping(MappingsConstants.adminDelete)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is deleted"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),
