@@ -9,6 +9,7 @@ import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvai
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomInput;
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomOutput;
+import com.tinqinacademy.hotel.core.exceptionfamilies.InputQueryEntityExceptionCase;
 import com.tinqinacademy.hotel.persistence.entities.ReservationEntity;
 import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
 import com.tinqinacademy.hotel.persistence.repositorynew.ReservationRepository;
@@ -34,7 +35,7 @@ import static io.vavr.Predicates.instanceOf;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class UserDisplayRoomOperationImpl implements UserDisplayRoomOperation {
+public class UserDisplayRoomOperationImpl extends BaseOperation<UserDisplayRoomOutput,UserDisplayRoomInput> implements UserDisplayRoomOperation {
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
 
@@ -58,41 +59,7 @@ public class UserDisplayRoomOperationImpl implements UserDisplayRoomOperation {
             log.info("End display room: {}", userDisplayRoomOutput);
             return userDisplayRoomOutput;
         }).toEither()
-                .mapLeft(throwable -> API.Match(throwable).of(
-                        Case($(instanceOf(InputException.class)), e -> {
-                            log.error("Invalid input: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        }),
-                        Case($(instanceOf(QueryException.class)), e -> {
-                            log.error("Invalid query: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        }),
-                        Case($(instanceOf(EntityNotFoundException.class)), e -> {
-                            log.error("Entity was not found: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        }),
-                        Case($(instanceOf(IllegalArgumentException.class)), e -> {
-                            log.error("Wrong arguments: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        })
-
-                ));
+                .mapLeft(InputQueryEntityExceptionCase::handleThrowable);
     }
     private RoomEntity getRoomEntity(UUID roomID) {
         return roomRepository.getReferenceById(roomID);

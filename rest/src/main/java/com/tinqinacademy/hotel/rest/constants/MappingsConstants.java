@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.rest.enums;
+package com.tinqinacademy.hotel.rest.constants;
 
 public class MappingsConstants {
     public static final String userAvailability="hotel/available";

@@ -1,36 +1,27 @@
 package com.tinqinacademy.hotel.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tinqinacademy.hotel.api.base.OperationInput;
+import com.tinqinacademy.hotel.api.base.OperationOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateInput;
-import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.delete.AdminDeleteInput;
-import com.tinqinacademy.hotel.api.model.operations.admin.delete.AdminDeleteOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.partialupdate.AdminPartialUpdateInput;
-import com.tinqinacademy.hotel.api.model.operations.admin.partialupdate.AdminPartialUpdateOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterInput;
-import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOutput;
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateInput;
-import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableInput;
 import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableOperation;
-import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookInput;
-import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomInput;
-import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterInput;
-import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookInput;
-import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookOutput;
-import com.tinqinacademy.hotel.core.processes.UserAvailableOperationImpl;
+import com.tinqinacademy.hotel.core.processes.BaseOperation;
 import com.tinqinacademy.hotel.core.services.RoomSystemService;
-import com.tinqinacademy.hotel.rest.enums.MappingsConstants;
+import com.tinqinacademy.hotel.rest.constants.MappingsConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,9 +32,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 public class ControllerSystem {
-    private final RoomSystemService roomSystemService;
-    private final UserAvailableOperation userAvailableOperation;
+//    private final RoomSystemService roomSystemService;
     private final ObjectMapper objectMapper;
+    private final BaseOperation< OperationOutput,  OperationInput> baseOperation;
 
     @GetMapping(MappingsConstants.userAvailability)
     @ApiResponses(value = {
@@ -52,7 +43,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
     @Operation(summary = "Checks availability")
-    public ResponseEntity<UserAvailableOutput> checkAvailable(@RequestParam LocalDate startDate
+    public ResponseEntity<?> checkAvailable(@RequestParam LocalDate startDate
             , @RequestParam LocalDate endDate
             , @RequestParam String bed
             , @RequestParam String bathRoomType) {
@@ -63,8 +54,8 @@ public class ControllerSystem {
                 .bathRoom(bathRoomType)
                 .build();
 
-        return ResponseEntity.ok(roomSystemService.checkAvailability(userAvailableInput));
-
+        //return ResponseEntity.ok(roomSystemService.checkAvailability(userAvailableInput));
+        return baseOperation.handleOperation(userAvailableInput);
     }
     @GetMapping(MappingsConstants.userDisplay)
     @ApiResponses(value = {
@@ -73,12 +64,12 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
     @Operation(summary = "Display all info regarding a room")
-    public ResponseEntity<UserDisplayRoomOutput> display(@PathVariable UUID roomID){
+    public ResponseEntity<?> display(@PathVariable UUID roomID){
         UserDisplayRoomInput userDisplayRoomInput = UserDisplayRoomInput.builder()
                 .roomID(roomID)
                 .build();
-        return ResponseEntity.ok(roomSystemService.displayRoom(userDisplayRoomInput));
-
+       // return ResponseEntity.ok(roomSystemService.displayRoom(userDisplayRoomInput));
+        return baseOperation.handleOperation(userDisplayRoomInput);
     }
     @PostMapping(MappingsConstants.userBook)
     @ApiResponses(value = {
@@ -87,11 +78,11 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "403", description = "Forbidden request")
     })
     @Operation(summary = "Makes a booking")
-    public ResponseEntity<UserBookOutput> book(@PathVariable UUID roomID, @Valid @RequestBody UserBookInput request){
+    public ResponseEntity<?> book(@PathVariable UUID roomID, @Valid @RequestBody UserBookInput request){
     UserBookInput userBookInput = request.toBuilder()
             .roomID(roomID)
             .build();
-    return ResponseEntity.ok(roomSystemService.bookRoom(userBookInput));
+    return baseOperation.handleOperation(userBookInput);
 
     }
 
@@ -103,12 +94,12 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Removes a booking")
-    public ResponseEntity<UserUnbookOutput> unbook(@PathVariable String reservationID){
+    public ResponseEntity<?> unbook(@PathVariable String reservationID){
         UserUnbookInput userUnbookInput = UserUnbookInput.builder()
                 .bookId(UUID.fromString(reservationID))
                 .build();
-        return ResponseEntity.ok(roomSystemService.unBookRoom(userUnbookInput));
-
+//        return ResponseEntity.ok(roomSystemService.unBookRoom(userUnbookInput));
+        return baseOperation.handleOperation(userUnbookInput);
     }
 
     @PostMapping(MappingsConstants.userRegister )
@@ -119,8 +110,9 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Registers a person")
-    public ResponseEntity<UserRegisterOutput> register(@Valid @RequestBody UserRegisterInput userRegisterInput){
-        return ResponseEntity.ok(roomSystemService.registerPerson(userRegisterInput));
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegisterInput userRegisterInput){
+//        return ResponseEntity.ok(roomSystemService.registerPerson(userRegisterInput));
+        return baseOperation.handleOperation(userRegisterInput);
     }
 
     @GetMapping(MappingsConstants.adminRegister)
@@ -131,7 +123,7 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Administrative register")
-    public ResponseEntity<AdminRegisterOutput> adminRegister(@RequestParam LocalDate startDate,
+    public ResponseEntity<?> adminRegister(@RequestParam LocalDate startDate,
                                                              @RequestParam LocalDate endDate,
                                                              @RequestParam String firstName,
                                                              @RequestParam String lastname,
@@ -153,7 +145,8 @@ public class ControllerSystem {
                 .issueDate(issueDate)
                 .roomID(roomID)
                 .build();
-        return ResponseEntity.ok(roomSystemService.adminRegister(adminRegisterInput));
+        //return ResponseEntity.ok(roomSystemService.adminRegister(adminRegisterInput));
+        return baseOperation.handleOperation(adminRegisterInput);
     }
 
     @PostMapping(MappingsConstants.adminCreate)
@@ -164,8 +157,9 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Admin creates room")
-    public ResponseEntity<AdminCreateOutput> adminCreate(@Valid @RequestBody AdminCreateInput adminCreateInput) {
-        return ResponseEntity.ok(roomSystemService.adminCreate(adminCreateInput));
+    public ResponseEntity<?> adminCreate(@Valid @RequestBody AdminCreateInput adminCreateInput) {
+//        return ResponseEntity.ok(roomSystemService.adminCreate(adminCreateInput));
+        return baseOperation.handleOperation(adminCreateInput);
     }
 
     @PutMapping(MappingsConstants.adminUpdate)
@@ -176,11 +170,12 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Admin updates room")
-    public ResponseEntity<AdminUpdateOutput> adminUpdate(@PathVariable String roomID,@Valid @RequestBody AdminUpdateInput request) {
+    public ResponseEntity<?> adminUpdate(@PathVariable String roomID,@Valid @RequestBody AdminUpdateInput request) {
         AdminUpdateInput adminUpdateInput = request.toBuilder()
                 .roomID(UUID.fromString(roomID))
                 .build();
-        return ResponseEntity.ok(roomSystemService.adminUpdate(adminUpdateInput));
+        //return ResponseEntity.ok(roomSystemService.adminUpdate(adminUpdateInput));
+        return baseOperation.handleOperation(adminUpdateInput);
     }
 
     @PatchMapping(MappingsConstants.adminPartialUpdate)
@@ -191,11 +186,12 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Admin partially updates the system")
-    public ResponseEntity<AdminPartialUpdateOutput> adminPartialUpdate(@PathVariable String roomID,@Valid @RequestBody AdminPartialUpdateInput request) {
+    public ResponseEntity<?> adminPartialUpdate(@PathVariable String roomID,@Valid @RequestBody AdminPartialUpdateInput request) {
         AdminPartialUpdateInput adminPartialUpdateInput = request.toBuilder()
                 .roomID(roomID)
                 .build();
-        return ResponseEntity.ok(roomSystemService.adminPartialUpdate(adminPartialUpdateInput));
+        //return ResponseEntity.ok(roomSystemService.adminPartialUpdate(adminPartialUpdateInput));
+    return baseOperation.handleOperation(adminPartialUpdateInput);
     }
     @DeleteMapping(MappingsConstants.adminDelete)
     @ApiResponses(value = {
@@ -205,11 +201,12 @@ public class ControllerSystem {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Admin deletes a room")
-    public ResponseEntity<AdminDeleteOutput> adminDelete(@PathVariable UUID roomID) {
+    public ResponseEntity<?> adminDelete(@PathVariable UUID roomID) {
         AdminDeleteInput adminDeleteInput = AdminDeleteInput.builder()
                 .ID(roomID)
                 .build();
-        return ResponseEntity.ok(roomSystemService.adminDelete(adminDeleteInput));
+        //return ResponseEntity.ok(roomSystemService.adminDelete(adminDeleteInput));
+        return baseOperation.handleOperation(adminDeleteInput);
     }
 
 }

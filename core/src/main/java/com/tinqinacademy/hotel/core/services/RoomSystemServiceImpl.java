@@ -51,6 +51,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public UserAvailableOutput checkAvailability(UserAvailableInput userAvailableInput) {
+        //MOVED
         log.info("Start check availability: {}", userAvailableInput);
         Bed bed= Bed.getByCode(userAvailableInput.getBed());
 
@@ -67,6 +68,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public UserDisplayRoomOutput displayRoom(UserDisplayRoomInput userDisplayRoomInput) {
+        //MOVED
         log.info("Start display room: {}", userDisplayRoomInput);
 
         RoomEntity roomEntity = roomRepository.getReferenceById(userDisplayRoomInput.getRoomID());
@@ -89,6 +91,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public UserBookOutput bookRoom(UserBookInput userBookInput) {
+        //,MOVED
         log.info("Start book room: {}", userBookInput);
         Long year=ChronoUnit.YEARS.between(userBookInput.getDateOfBirth(), LocalDate.now());
         if(year<18L){
@@ -133,6 +136,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public UserUnbookOutput unBookRoom(UserUnbookInput unBookInputUser) {
+        //MOVED
         log.info("Start unbook room: {}", unBookInputUser);
         reservationRepository.deleteById(unBookInputUser.getBookId());
         UserUnbookOutput userUnbookOutput = UserUnbookOutput.builder()
@@ -144,6 +148,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public UserRegisterOutput registerPerson(UserRegisterInput userRegisterInput) {
+        //moved
        log.info("Start register person: {}", userRegisterInput);
        if(roomRepository.findByRoomNumber(userRegisterInput.getRoomNumber()).isEmpty()){
            throw new InputException("Room number is wrong");
@@ -178,6 +183,8 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public AdminRegisterOutput adminRegister(AdminRegisterInput adminInfoInput) {
+        //TODO
+        //MOVED
         log.info("Start admin info: {}", adminInfoInput);
 
         AdminRegisterOutput adminRegisterOutput = AdminRegisterOutput.builder()
@@ -198,6 +205,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public AdminCreateOutput adminCreate(AdminCreateInput adminCreateInput) {
+        //moved
         log.info("Start admin create room: {}", adminCreateInput);
         BathRoom bathRoom=BathRoom.getByCode(adminCreateInput.getBathRoom());
         if(bathRoom.equals(BathRoom.UNKNOWN)){
@@ -240,6 +248,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public AdminUpdateOutput adminUpdate(AdminUpdateInput adminUpdateInput) {
+        //moved
         log.info("Start admin update room: {}", adminUpdateInput);
         Optional<RoomEntity> roomEntityOptional = roomRepository.findById(adminUpdateInput.getRoomID());
         if(roomEntityOptional.isEmpty()){
@@ -282,6 +291,9 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public AdminPartialUpdateOutput adminPartialUpdate(AdminPartialUpdateInput adminPartialUpdateInput) {
+        //todo
+        //moved
+
         log.info("Start admin partial update room: {}", adminPartialUpdateInput);
         if(adminPartialUpdateInput.getRoomID().equalsIgnoreCase("5A"))
             throw new InputException("Invalid room for partial update");
@@ -294,6 +306,7 @@ public class RoomSystemServiceImpl implements RoomSystemService {
 
     @Override
     public AdminDeleteOutput adminDelete(AdminDeleteInput adminDeleteInput) {
+        //moved
         log.info("Start admin delete room: {}", adminDeleteInput);
         Optional<RoomEntity> roomEntityOptional= roomRepository.findById(adminDeleteInput.getID());
         if(roomEntityOptional.isEmpty()){

@@ -6,6 +6,7 @@ import com.tinqinacademy.hotel.api.exceptions.QueryException;
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterInput;
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOutput;
+import com.tinqinacademy.hotel.core.exceptionfamilies.InputQueryExceptionCase;
 import com.tinqinacademy.hotel.persistence.entities.GuestEntity;
 import com.tinqinacademy.hotel.persistence.entities.ReservationEntity;
 import com.tinqinacademy.hotel.persistence.repositorynew.GuestRepository;
@@ -31,7 +32,7 @@ import static io.vavr.Predicates.instanceOf;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class UserRegisterOperationImpl implements UserRegisterOperation {
+public class UserRegisterOperationImpl extends BaseOperation<UserRegisterOutput,UserRegisterInput> implements UserRegisterOperation {
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
     private final GuestRepository guestRepository;
@@ -75,25 +76,7 @@ public class UserRegisterOperationImpl implements UserRegisterOperation {
                     return userRegisterOutput;
                 })
                 .toEither()
-                .mapLeft(throwable -> API.Match(throwable).of(
-                        Case($(instanceOf(InputException.class)), e -> {
-                            log.error("Invalid input: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        }),
-                        Case($(instanceOf(QueryException.class)), e -> {
-                            log.error("Invalid query: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        })
-
-                ));
+                .mapLeft(InputQueryExceptionCase::handleThrowable);
     }
 
 }

@@ -6,6 +6,7 @@ import com.tinqinacademy.hotel.api.exceptions.QueryException;
 import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.book.UserBookOutput;
+import com.tinqinacademy.hotel.core.exceptionfamilies.InputQueryExceptionCase;
 import com.tinqinacademy.hotel.persistence.entities.ReservationEntity;
 import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
 import com.tinqinacademy.hotel.persistence.entities.UserEntity;
@@ -34,7 +35,8 @@ import static io.vavr.Predicates.instanceOf;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class UserBookOperationImpl implements UserBookOperation {
+public class UserBookOperationImpl extends BaseOperation<UserBookOutput,UserBookInput> implements UserBookOperation {
+
 
     private final ReservationRepository reservationRepository;
     private final RoomRepository roomRepository;
@@ -74,25 +76,7 @@ public class UserBookOperationImpl implements UserBookOperation {
             return userBookOutput;
         })
                 .toEither()
-                .mapLeft(throwable -> API.Match(throwable).of(
-                        Case($(instanceOf(InputException.class)), e -> {
-                            log.error("Invalid input: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        }),
-                        Case($(instanceOf(QueryException.class)), e -> {
-                            log.error("Invalid query: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        })
-
-                ));
+                .mapLeft(InputQueryExceptionCase::handleThrowable);
     }
     private Long ageCheck(LocalDate birthday){
         Long year= ChronoUnit.YEARS.between(birthday, LocalDate.now());

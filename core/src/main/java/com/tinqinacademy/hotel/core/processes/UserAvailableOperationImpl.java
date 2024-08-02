@@ -8,6 +8,7 @@ import com.tinqinacademy.hotel.api.exceptions.QueryException;
 import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableInput;
 import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableOutput;
+import com.tinqinacademy.hotel.core.exceptionfamilies.InputQueryExceptionCase;
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
 import io.vavr.API;
 import io.vavr.control.Either;
@@ -21,14 +22,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.Predicates.instanceOf;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class UserAvailableOperationImpl implements UserAvailableOperation {
+public class UserAvailableOperationImpl extends BaseOperation<UserAvailableOutput,UserAvailableInput> implements UserAvailableOperation {
 
     private final RoomRepository roomRepository;
 
@@ -42,25 +40,7 @@ public class UserAvailableOperationImpl implements UserAvailableOperation {
             log.info("End check availability: {}", userAvailableOutput);
             return userAvailableOutput;
         }).toEither()
-                .mapLeft(throwable -> API.Match(throwable).of(
-                        Case($(instanceOf(InputException.class)), e -> {
-                            log.error("Invalid input: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        }),
-                        Case($(instanceOf(QueryException.class)), e -> {
-                            log.error("Invalid query: {}", e.getMessage());
-                            return ErrorsProcessor.builder()
-                                    .httpStatus(HttpStatus.NOT_FOUND)
-                                    .statusCode(HttpStatus.NOT_FOUND.value())
-                                    .message(e.getMessage())
-                                    .build();
-                        })
-
-                ));
+                .mapLeft(InputQueryExceptionCase::handleThrowable);
     }
     private Bed getBedCheck(String bed) {
         return Optional.ofNullable(Bed.getByCode(bed))
