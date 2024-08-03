@@ -1,14 +1,16 @@
 package com.tinqinacademy.hotel.core.processes;
 
-import com.tinqinacademy.hotel.api.base.ErrorsProcessor;
+import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOperation;
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOutput;
-import com.tinqinacademy.hotel.core.exceptionfamilies.InputQueryExceptionCase;
+import com.tinqinacademy.hotel.core.families.casehandlers.InputQueryExceptionCase;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,15 +18,18 @@ import java.util.Arrays;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class AdminRegisterOperationImpl extends BaseOperation<AdminRegisterOutput,AdminRegisterInput> implements AdminRegisterOperation {
+public class AdminRegisterOperationImpl extends BaseProcess implements AdminRegisterOperation {
 
+
+    public AdminRegisterOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator) {
+        super(conversionService, errorMapper, validator);
+    }
 
     @Override
-    public Either<ErrorsProcessor, AdminRegisterOutput> process(AdminRegisterInput input) {
-        return Try.of(()->{
+    public Either<ErrorsProcessor, AdminRegisterOutput> process(@Valid AdminRegisterInput input) {
+        return validateInput(input).flatMap(validInput -> Try.of(()->{
                     log.info("Start admin info: {}", input);
-                    //must be fixed!!!!!!
+                    //todo
                     AdminRegisterOutput adminRegisterOutput = AdminRegisterOutput.builder()
                             .data(new ArrayList<>(Arrays.asList("1","2","3")))
                             .startDate(input.getStartDate())
@@ -43,6 +48,6 @@ public class AdminRegisterOperationImpl extends BaseOperation<AdminRegisterOutpu
 
 
         }).toEither()
-                .mapLeft(InputQueryExceptionCase::handleThrowable);
+                .mapLeft(InputQueryExceptionCase::handleThrowable));
     }
 }

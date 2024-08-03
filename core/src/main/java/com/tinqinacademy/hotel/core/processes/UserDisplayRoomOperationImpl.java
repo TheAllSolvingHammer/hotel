@@ -1,26 +1,24 @@
 package com.tinqinacademy.hotel.core.processes;
 
-import com.tinqinacademy.hotel.api.base.ErrorsProcessor;
+import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.enums.BathRoom;
 import com.tinqinacademy.hotel.api.enums.Bed;
-import com.tinqinacademy.hotel.api.exceptions.InputException;
 import com.tinqinacademy.hotel.api.exceptions.QueryException;
-import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomInput;
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomOutput;
-import com.tinqinacademy.hotel.core.exceptionfamilies.InputQueryEntityExceptionCase;
+import com.tinqinacademy.hotel.core.families.casehandlers.InputQueryEntityExceptionCase;
 import com.tinqinacademy.hotel.persistence.entities.ReservationEntity;
 import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
 import com.tinqinacademy.hotel.persistence.repositorynew.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
-import io.vavr.API;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,19 +28,25 @@ import java.util.UUID;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
-import static io.vavr.Predicates.instanceOf;
 
-@RequiredArgsConstructor
+
 @Service
 @Slf4j
-public class UserDisplayRoomOperationImpl extends BaseOperation<UserDisplayRoomOutput,UserDisplayRoomInput> implements UserDisplayRoomOperation {
+public class UserDisplayRoomOperationImpl extends BaseProcess implements UserDisplayRoomOperation{
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
 
+    @Autowired
+    public UserDisplayRoomOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator, RoomRepository roomRepository, ReservationRepository reservationRepository) {
+        super(conversionService, errorMapper, validator);
+        this.roomRepository = roomRepository;
+        this.reservationRepository = reservationRepository;
+    }
+
     @Override
-    public Either<ErrorsProcessor, UserDisplayRoomOutput> process(UserDisplayRoomInput input) {
+    public Either<ErrorsProcessor, UserDisplayRoomOutput> process(@Valid UserDisplayRoomInput input) {
         log.info("Start display room: {}", input);
-        return Try.of(()-> {
+        return validateInput(input).flatMap(validInput -> Try.of(()-> {
             RoomEntity roomEntity = getRoomEntity(input.getRoomID());
             List<ReservationEntity> reservationEntityList=reservationRepository.findByRoomId(roomEntity.getId());
             List<LocalDate> startDates=reservationEntityList.stream().map(ReservationEntity::getStartDate).toList();
@@ -59,7 +63,7 @@ public class UserDisplayRoomOperationImpl extends BaseOperation<UserDisplayRoomO
             log.info("End display room: {}", userDisplayRoomOutput);
             return userDisplayRoomOutput;
         }).toEither()
-                .mapLeft(InputQueryEntityExceptionCase::handleThrowable);
+                .mapLeft(InputQueryEntityExceptionCase::handleThrowable));
     }
     private RoomEntity getRoomEntity(UUID roomID) {
         return roomRepository.getReferenceById(roomID);

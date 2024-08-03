@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.enums.BathRoom;
 import com.tinqinacademy.hotel.api.enums.Bed;
 import com.tinqinacademy.hotel.api.exceptions.InputException;

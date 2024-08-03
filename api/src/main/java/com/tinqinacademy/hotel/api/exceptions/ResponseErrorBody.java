@@ -13,5 +13,5 @@ import java.util.List;
 @Builder
 public class ResponseErrorBody
 {
-   private List<ErrorWrapper> errors;
+   private List<ErrorsProcessor> errors;
 }
