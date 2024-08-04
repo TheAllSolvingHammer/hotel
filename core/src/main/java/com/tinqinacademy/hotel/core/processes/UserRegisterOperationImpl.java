@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -81,13 +82,15 @@ public class UserRegisterOperationImpl extends BaseProcess implements UserRegist
     }
 
     private UUID getReservationUUID(UserRegisterInput input,UUID roomID) {
-        return reservationRepository
+        Optional<UUID> reservationOptional =reservationRepository
                 .findByRoomIDAndStartDateAndEndDate(
-                        roomID.toString(),
+                        roomID,
                         input.getStartDate(),
-                        input.getEndDate()
-                )
-                .orElseThrow(() -> new QueryException("Reservation ID is wrong"));
+                        input.getEndDate());
+        if(reservationOptional.isEmpty()){
+            throw new QueryException("Reservation ID is missing");
+        }
+        return reservationOptional.get();
     }
 
     private UUID getRoomUUID(UserRegisterInput input){
