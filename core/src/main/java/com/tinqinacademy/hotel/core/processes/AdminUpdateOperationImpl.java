@@ -1,8 +1,8 @@
 package com.tinqinacademy.hotel.core.processes;
 
-import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.enums.BathRoom;
 import com.tinqinacademy.hotel.api.enums.Bed;
+import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.exceptions.InputException;
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateOperation;
@@ -13,7 +13,6 @@ import com.tinqinacademy.hotel.core.families.converters.StringInputBedsToBedEnti
 import com.tinqinacademy.hotel.persistence.entities.BedEntity;
 import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
 import com.tinqinacademy.hotel.persistence.enums.BathTypes;
-import com.tinqinacademy.hotel.persistence.enums.BedTypes;
 import com.tinqinacademy.hotel.persistence.repositorynew.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
 import io.vavr.control.Either;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -86,7 +84,7 @@ public class AdminUpdateOperationImpl extends BaseProcess implements AdminUpdate
         return listToRetain;
     }
 
-    private static void verifyBathroom(AdminUpdateInput input) {
+    private void verifyBathroom(AdminUpdateInput input) {
         BathRoom bathRoom=BathRoom.getByCode(input.getBathRoom());
         if(bathRoom.equals(BathRoom.UNKNOWN)){
             throw new InputException("Bathroom is unknown");

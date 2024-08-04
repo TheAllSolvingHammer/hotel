@@ -80,6 +80,11 @@
 			<artifactId>vavr</artifactId>
 			<version>0.9.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.java-json-tools</groupId>
+			<artifactId>json-patch</artifactId>
+			<version>1.13</version>
+		</dependency>
 	</dependencies>
 
 <!--	<build>-->

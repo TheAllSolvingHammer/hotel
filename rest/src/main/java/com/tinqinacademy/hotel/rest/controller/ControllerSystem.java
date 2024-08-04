@@ -190,7 +190,7 @@ public class ControllerSystem extends BaseController {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Admin partially updates the system")
-    public ResponseEntity<?> adminPartialUpdate(@PathVariable String roomID, @RequestBody AdminPartialUpdateInput request) {
+    public ResponseEntity<?> adminPartialUpdate(@PathVariable UUID roomID, @RequestBody AdminPartialUpdateInput request) {
         AdminPartialUpdateInput adminPartialUpdateInput = request.toBuilder()
                 .roomID(roomID)
                 .build();
