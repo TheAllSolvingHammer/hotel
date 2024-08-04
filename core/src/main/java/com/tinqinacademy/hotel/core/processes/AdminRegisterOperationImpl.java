@@ -5,24 +5,29 @@ import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegister
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOperation;
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOutput;
 import com.tinqinacademy.hotel.core.families.casehandlers.InputQueryExceptionCase;
+import com.tinqinacademy.hotel.core.specifiers.GuestSpecifications;
+import com.tinqinacademy.hotel.persistence.entities.GuestEntity;
+import com.tinqinacademy.hotel.persistence.repositorynew.GuestRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Slf4j
 public class AdminRegisterOperationImpl extends BaseProcess implements AdminRegisterOperation {
-
-
-    public AdminRegisterOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator) {
+    private final GuestRepository guestRepository;
+    @Autowired
+    public AdminRegisterOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator, GuestRepository guestRepository) {
         super(conversionService, errorMapper, validator);
+        this.guestRepository = guestRepository;
     }
 
     @Override
@@ -30,8 +35,20 @@ public class AdminRegisterOperationImpl extends BaseProcess implements AdminRegi
         return validateInput(input).flatMap(validInput -> Try.of(()->{
                     log.info("Start admin info: {}", input);
                     //todo
+                          // Build the specification using the provided filters
+                    Specification<GuestEntity> specification = Specification.where(GuestSpecifications.hasRoomId(input.getRoomID()))
+                            .and(GuestSpecifications.betweenDates(input.getStartDate(), input.getEndDate()))
+                            .and(GuestSpecifications.hasFirstName(input.getFirstName()))
+                            .and(GuestSpecifications.hasLastName(input.getLastName()))
+                            .and(GuestSpecifications.hasPhone(input.getPhone()))
+                            .and(GuestSpecifications.hasIdNumber(input.getIdNumber()));
+
+                    List<GuestEntity> guests = guestRepository.findAll(specification);
+
                     AdminRegisterOutput adminRegisterOutput = AdminRegisterOutput.builder()
-                            .data(new ArrayList<>(Arrays.asList("1","2","3")))
+                            .data(guests.stream()
+                                    .map(guest -> String.format("Guest: %s %s, Phone: %s, ID: %s", guest.getFirstName(), guest.getLastName(), guest.getPhoneNumber(), guest.getIdCardNumber()))
+                                    .toList())
                             .startDate(input.getStartDate())
                             .endDate(input.getEndDate())
                             .firstName(input.getFirstName())
@@ -41,7 +58,9 @@ public class AdminRegisterOperationImpl extends BaseProcess implements AdminRegi
                             .validity(input.getValidity())
                             .authority(input.getAuthority())
                             .issueDate(input.getIssueDate())
+                            .roomID(input.getRoomID())
                             .build();
+
                     log.info("End admin info: {}", adminRegisterOutput);
                     return adminRegisterOutput;
 

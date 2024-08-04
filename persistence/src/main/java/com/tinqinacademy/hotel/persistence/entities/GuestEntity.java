@@ -12,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder
+
 @Entity
 @Table(name="guests")
 public class GuestEntity {

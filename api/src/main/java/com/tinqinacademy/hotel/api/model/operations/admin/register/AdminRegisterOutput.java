@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -22,4 +23,5 @@ public class AdminRegisterOutput implements OperationOutput {
     private String validity;
     private String authority;
     private LocalDate issueDate;
+    private String roomID;
 }
