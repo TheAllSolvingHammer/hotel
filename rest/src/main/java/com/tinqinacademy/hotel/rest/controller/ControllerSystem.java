@@ -1,9 +1,6 @@
 package com.tinqinacademy.hotel.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tinqinacademy.hotel.api.base.OperationInput;
-import com.tinqinacademy.hotel.api.base.OperationOutput;
-import com.tinqinacademy.hotel.api.base.OperationProcessor;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateOperation;
 import com.tinqinacademy.hotel.api.model.operations.admin.delete.AdminDeleteInput;
@@ -24,15 +21,11 @@ import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterIn
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookOperation;
-import com.tinqinacademy.hotel.core.services.RoomSystemService;
 import com.tinqinacademy.hotel.rest.constants.MappingsConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +35,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class ControllerSystem extends BaseController {
-    private final RoomSystemService roomSystemService;
     private final ObjectMapper objectMapper;
     private final UserAvailableOperation userAvailableOperation;
     private final UserBookOperation userBookOperation;
