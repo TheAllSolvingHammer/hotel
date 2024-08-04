@@ -2,8 +2,7 @@ package com.tinqinacademy.hotel.api.exceptions;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;
-
-import java.time.LocalDate;
+import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
@@ -11,9 +10,9 @@ import java.time.LocalDate;
 @NoArgsConstructor()
 @AllArgsConstructor()
 @Builder
-public class ErrorWrapper {
-    private String message;
-    private HttpStatus status;
+@Component
+public class ErrorsProcessor {
+    private HttpStatus httpStatus;
     private Integer statusCode;
-    private LocalDate timestamp;
+    private String message;
 }

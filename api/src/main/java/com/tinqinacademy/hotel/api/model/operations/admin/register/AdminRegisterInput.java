@@ -35,6 +35,5 @@ public class AdminRegisterInput implements OperationInput {
     private String authority;
     @PastOrPresent(message = "Issue date can not be in the future")
     private LocalDate issueDate;
-    @NotBlank(message = "Room id can not be blank")
     private String roomID;
 }

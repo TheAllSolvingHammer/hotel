@@ -11,8 +11,6 @@ import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface ReservationRepository extends JpaRepository<ReservationEntity, UUID> {
-    List<ReservationEntity> findByEndDateGreaterThan(LocalDate startDate);
-   // List<RoomEntity> findByDateBetweenStartDateAndEndDate(LocalDate startDate, LocalDate endDate);
 
     String query= """
             SELECT r.room_id
@@ -42,5 +40,5 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
               and rs.room_room_id=:roomID
             """;
     @Query(value = query_for_client, nativeQuery = true)
-    Optional<UUID> findByRoomIDAndStartDateAndEndDate(String roomID, LocalDate startDate, LocalDate endDate);
+    Optional<UUID> findByRoomIDAndStartDateAndEndDate(UUID roomID, LocalDate startDate, LocalDate endDate);
 }
