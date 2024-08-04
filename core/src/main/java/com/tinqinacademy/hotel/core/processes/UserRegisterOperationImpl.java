@@ -6,8 +6,10 @@ import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterIn
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOutput;
 import com.tinqinacademy.hotel.core.families.casehandlers.InputQueryExceptionCase;
+import com.tinqinacademy.hotel.core.families.converters.RegisterInputToGuestConverter;
 import com.tinqinacademy.hotel.persistence.entities.GuestEntity;
 import com.tinqinacademy.hotel.persistence.entities.ReservationEntity;
+import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
 import com.tinqinacademy.hotel.persistence.repositorynew.GuestRepository;
 import com.tinqinacademy.hotel.persistence.repositorynew.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
@@ -22,11 +24,9 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 import java.util.UUID;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
 
 
 @Service
@@ -36,45 +36,29 @@ public class UserRegisterOperationImpl extends BaseProcess implements UserRegist
     private final ReservationRepository reservationRepository;
     private final GuestRepository guestRepository;
     private final UserRepository userRepository;
+    private final RegisterInputToGuestConverter registerInputToGuest;
 
     @Autowired
-    public UserRegisterOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator, RoomRepository roomRepository, ReservationRepository reservationRepository, GuestRepository guestRepository, UserRepository userRepository) {
+    public UserRegisterOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator, RoomRepository roomRepository, ReservationRepository reservationRepository, GuestRepository guestRepository, UserRepository userRepository, RegisterInputToGuestConverter registerInputToGuest) {
         super(conversionService, errorMapper, validator);
         this.roomRepository = roomRepository;
         this.reservationRepository = reservationRepository;
         this.guestRepository = guestRepository;
         this.userRepository = userRepository;
+        this.registerInputToGuest = registerInputToGuest;
     }
 
     @Override
     public Either<ErrorsProcessor, UserRegisterOutput> process(@Valid UserRegisterInput input) {
         return validateInput(input).flatMap(validInput -> Try.of(() -> {
                     log.info("Start register person: {}", input);
-                    if (roomRepository.findByRoomNumber(input.getRoomNumber()).isEmpty()) {
-                        throw new InputException("Room number is wrong");
+                    UUID roomID=getRoomUUID(input);
+                    UUID reservationID=getReservationUUID(input,roomID);
+                    ReservationEntity reservationEntity = reservationRepository.getReferenceById(reservationID);
+                    List<GuestEntity> guestEntities = registerInputToGuest.convert(input);
+                    if(guestEntities==null){
+                        throw new ClassCastException("Error in converting");
                     }
-                    UUID roomID = roomRepository.findByRoomNumber(input.getRoomNumber())
-                            .get()
-                            .getId();
-                    Optional<UUID> reservationIDOptional = reservationRepository
-                            .findByRoomIDAndStartDateAndEndDate(
-                                    roomID.toString()
-                                    , input.getStartDate(), input.getEndDate());
-                    if (reservationIDOptional.isEmpty()) {
-                        throw new InputException("Reservation ID is wrong");
-                    }
-                    
-                    ReservationEntity reservationEntity = reservationRepository.getReferenceById(reservationIDOptional.get());
-                    List<GuestEntity> guestEntities = input.getUsers().stream().map(e -> GuestEntity.builder()
-                            .authority(e.getAuthority())
-                            .birthDate(e.getDateOfBirth())
-                            .firstName(e.getFirstName())
-                            .lastName(e.getLastName())
-                            .validity(e.getValidity())
-                            .issueDate(e.getIssueDate())
-                            .idCardNumber(e.getIdNumber())
-                            .phoneNumber(e.getPhone())
-                            .build()).toList();
                     guestRepository.saveAll(guestEntities);
                     reservationEntity.setGuests(guestEntities);
                     reservationRepository.flush();
@@ -87,15 +71,21 @@ public class UserRegisterOperationImpl extends BaseProcess implements UserRegist
                 .toEither()
                 .mapLeft(InputQueryExceptionCase::handleThrowable));
     }
-    private UUID getUUID(UserRegisterInput input){
-        Optional<UUID> reservationIDOptional = reservationRepository
-                .findByRoomIDAndStartDateAndEndDate(
-                        roomID.toString()
-                        , input.getStartDate(), input.getEndDate());
-        if (reservationIDOptional.isEmpty()) {
-            throw new InputException("Reservation ID is wrong");
-        }
 
+    private UUID getReservationUUID(UserRegisterInput input,UUID roomID) {
+        return reservationRepository
+                .findByRoomIDAndStartDateAndEndDate(
+                        roomID.toString(),
+                        input.getStartDate(),
+                        input.getEndDate()
+                )
+                .orElseThrow(() -> new InputException("Reservation ID is wrong"));
+    }
+
+    private UUID getRoomUUID(UserRegisterInput input){
+        return roomRepository.findByRoomNumber(input.getRoomNumber())
+                .map(RoomEntity::getId)
+                .orElseThrow(() -> new InputException("Room number is wrong"));
     }
 
 }
