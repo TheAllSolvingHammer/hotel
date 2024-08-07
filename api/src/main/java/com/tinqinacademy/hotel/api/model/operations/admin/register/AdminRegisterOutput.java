@@ -20,7 +20,7 @@ public class AdminRegisterOutput implements OperationOutput {
     private String lastName;
     private String phone;
     private String idNumber;
-    private String validity;
+    private LocalDate validity;
     private String authority;
     private LocalDate issueDate;
     private String roomID;

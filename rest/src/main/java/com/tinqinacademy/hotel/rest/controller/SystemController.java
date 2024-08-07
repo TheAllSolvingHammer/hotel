@@ -61,7 +61,7 @@ public class SystemController extends BaseController {
                                                              @RequestParam String lastname,
                                                              @RequestParam String phoneNumber,
                                                              @RequestParam String idNumber,
-                                                             @RequestParam String validity,
+                                                             @RequestParam LocalDate validity,
                                                              @RequestParam String authority,
                                                              @RequestParam LocalDate issueDate,
                                                              @RequestParam String roomID){

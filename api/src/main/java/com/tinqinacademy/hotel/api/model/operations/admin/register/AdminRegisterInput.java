@@ -16,9 +16,9 @@ import java.time.LocalDate;
 @AllArgsConstructor()
 @Builder
 public class AdminRegisterInput implements OperationInput {
-    @FutureOrPresent(message = "Start date can not be in the past")
+
     private LocalDate startDate;
-    @FutureOrPresent(message = "End date can not be in the past")
+
     private LocalDate endDate;
     @NotBlank(message = "First name can not be blank")
     private String firstName;
@@ -29,8 +29,7 @@ public class AdminRegisterInput implements OperationInput {
     private String phone;
     @NotBlank(message = "Room ID can not be blank")
     private String idNumber;
-    @NotBlank(message = "Validity can not be blank")
-    private String validity;
+    private LocalDate validity;
     @NotBlank(message = "Authority can not be blank")
     private String authority;
     @PastOrPresent(message = "Issue date can not be in the future")
