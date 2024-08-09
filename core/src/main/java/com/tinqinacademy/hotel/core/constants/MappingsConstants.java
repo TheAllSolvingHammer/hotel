@@ -1,6 +1,8 @@
-package com.tinqinacademy.hotel.rest.constants;
+package com.tinqinacademy.hotel.core.constants;
 
 public class MappingsConstants {
+
+
     public static final String userAvailability="hotel/available";
     public static final String userDisplay="hotel/{roomID}";
     public static final String userBook ="hotel/{roomID}";

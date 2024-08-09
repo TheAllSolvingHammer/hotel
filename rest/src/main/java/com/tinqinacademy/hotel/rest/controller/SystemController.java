@@ -13,7 +13,7 @@ import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateInpu
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterInput;
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOperation;
-import com.tinqinacademy.hotel.rest.constants.MappingsConstants;
+import com.tinqinacademy.hotel.core.constants.MappingsConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -55,16 +55,16 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "404", description = "Server was not found")
     })
     @Operation(summary = "Administrative register")
-    public ResponseEntity<?> adminRegister(@RequestParam LocalDate startDate,
-                                                             @RequestParam LocalDate endDate,
-                                                             @RequestParam String firstName,
-                                                             @RequestParam String lastname,
-                                                             @RequestParam String phoneNumber,
-                                                             @RequestParam String idNumber,
-                                                             @RequestParam LocalDate validity,
-                                                             @RequestParam String authority,
-                                                             @RequestParam LocalDate issueDate,
-                                                             @RequestParam String roomID){
+    public ResponseEntity<?> adminRegister(@RequestParam(required = false) LocalDate startDate,
+                                                             @RequestParam(required = false) LocalDate endDate,
+                                                             @RequestParam(required = false) String firstName,
+                                                             @RequestParam(required = false) String lastname,
+                                                             @RequestParam(required = false) String phoneNumber,
+                                                             @RequestParam(required = false) String idNumber,
+                                                             @RequestParam(required = false) LocalDate validity,
+                                                             @RequestParam(required = false) String authority,
+                                                             @RequestParam(required = false) LocalDate issueDate,
+                                                             @RequestParam(required = false) String roomID){
         AdminRegisterInput adminRegisterInput = AdminRegisterInput.builder()
                 .startDate(startDate)
                 .endDate(endDate)
