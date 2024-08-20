@@ -35,7 +35,7 @@ public class SystemController extends BaseController {
     private final AdminDeleteOperation adminDeleteOperation;
     private final AdminCreateOperation adminCreateOperation;
 
-    @PostMapping(MappingsConstants.systemRegister)
+    @PostMapping(MappingsConstants.userRegister)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room is registered"),
             @ApiResponse(responseCode = "400", description = "Wrong syntax"),

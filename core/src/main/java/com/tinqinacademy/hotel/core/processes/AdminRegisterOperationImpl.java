@@ -5,13 +5,10 @@ import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegister
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOperation;
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOutput;
 import com.tinqinacademy.hotel.core.families.casehandlers.InputQueryExceptionCase;
-import com.tinqinacademy.hotel.core.specifiers.GuestSpecifications;
 import com.tinqinacademy.hotel.persistence.entities.GuestEntity;
 import com.tinqinacademy.hotel.persistence.repositorynew.GuestRepository;
-import com.tinqinacademy.hotel.persistence.repositorynew.ReservationRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +31,7 @@ public class AdminRegisterOperationImpl extends BaseProcess implements AdminRegi
     }
 
     @Override
-    public Either<ErrorsProcessor, AdminRegisterOutput> process(@Valid AdminRegisterInput input) {
+    public Either<ErrorsProcessor, AdminRegisterOutput> process(AdminRegisterInput input) {
         return validateInput(input).flatMap(validInput -> Try.of(()->{
                     log.info("Start getGuestReport input: {}", input.toString());
 

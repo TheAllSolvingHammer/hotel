@@ -10,7 +10,6 @@ import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class AdminDeleteOperationImpl extends BaseProcess implements AdminDelete
     }
 
     @Override
-    public Either<ErrorsProcessor, AdminDeleteOutput> process(@Valid AdminDeleteInput input) {
+    public Either<ErrorsProcessor, AdminDeleteOutput> process(AdminDeleteInput input) {
         return validateInput(input).flatMap(validInput -> Try.of(()->{
             log.info("Start admin delete room: {}", input);
                     verifyRoom(input);
