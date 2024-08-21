@@ -1,15 +1,134 @@
+version: '3.9'
+
 services:
-  postgres:
-    image: 'postgres:latest'
-    environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=adminadmin'
-      - 'POSTGRES_USER=admin'
+  hotel_db:
+    container_name: hotel_db
+    image: postgres
+    restart: unless-stopped
+    networks:
+      - hotel
     ports:
-      - '5432:5432'
+      - "5432:5432"
+    volumes:
+      - hotel_db:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=hotel
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    networks:
+      - hotel
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin_not_used@user.com
+      PGADMIN_DEFAULT_PASSWORD: admin_not_used
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "5050:80"
     restart: always
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pgadmin_data:/var/lib/pgadmin
+
+
+
+  springadmin:
+    container_name: springadmin
+    platform: linux/x86_64
+    build: ../springadmin
+    restart: on-failure
+    ports:
+      - "1234:8084"
+    stdin_open: true
+    tty: true
+    networks:
+      - hotel
+    volumes:
+      - .m2:/root/.m2
+
+  hotel:
+    container_name: hotel
+    depends_on:
+      - hotel_db
+      - springadmin
+    platform: linux/x86_64
+    build: ../hotel
+    restart: on-failure
+    ports:
+      - "1235:8080"
+    stdin_open: true
+    tty: true
+    networks:
+      - hotel
+    volumes:
+      - .m2:/root/.m2
+
+  comments:
+    container_name: comments
+    depends_on:
+      - hotel_db
+      - springadmin
+      - hotel
+    platform: linux/x86_64
+    build: ../comment
+    restart: on-failure
+    ports:
+      - "1236:8081"
+    stdin_open: true
+    tty: true
+    networks:
+      - hotel
+    volumes:
+      - .m2:/root/.m2
+
+
+
+  authentication:
+    container_name: authentication
+    depends_on:
+      - hotel_db
+      - springadmin
+      - hotel
+      - comments
+    platform: linux/x86_64
+    build: ../authentication
+    restart: on-failure
+    ports:
+      - "1238:8085"
+    stdin_open: true
+    tty: true
+    networks:
+      - hotel
+    volumes:
+      - .m2:/root/.m2
+
+  bff:
+    container_name: bff
+    depends_on:
+      - hotel_db
+      - springadmin
+      - hotel
+      - comments
+      - authentication
+    platform: linux/x86_64
+    build: ../bff
+    restart: on-failure
+    ports:
+      - "1239:8082"
+    stdin_open: true
+    tty: true
+    networks:
+      - hotel
+    volumes:
+      - .m2:/root/.m2
+
+networks:
+  hotel:
+    driver: bridge
 
 volumes:
-  postgres_data:
+  hotel_db:
+  pgadmin_data:
