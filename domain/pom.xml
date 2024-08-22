@@ -9,7 +9,6 @@
 
 	</parent>
 	<artifactId>domain</artifactId>
-	<version>${revision}</version>
 	<name>hotel-domain</name>
 	<description>Hotel Project </description>
 

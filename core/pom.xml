@@ -9,7 +9,6 @@
 
 	</parent>
 	<artifactId>core</artifactId>
-	<version>${revision}</version>
 	<name>hotel-core</name>
 	<description>Hotel Project </description>
 	<dependencies>

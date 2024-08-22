@@ -9,7 +9,6 @@
 
 	</parent>
 	<artifactId>restexport</artifactId>
-	<version>${revision}</version>
 	<name>hotel-restexport</name>
 	<description>Hotel Project </description>
 	<dependencies>

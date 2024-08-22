@@ -9,7 +9,6 @@
 
 	</parent>
 	<artifactId>api</artifactId>
-	<version>${revision}</version>
 	<name>hotel-api</name>
 	<description>Hotel Project </description>
 
