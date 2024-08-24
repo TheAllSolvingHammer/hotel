@@ -14,7 +14,6 @@ import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
 import com.tinqinacademy.hotel.persistence.repositorynew.UserRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +25,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
-
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
 
 
 @Service
@@ -49,7 +45,7 @@ public class UserBookOperationImpl extends BaseProcess implements UserBookOperat
     }
 
     @Override
-    public Either<ErrorsProcessor, UserBookOutput> process(@Valid UserBookInput input) {
+    public Either<ErrorsProcessor, UserBookOutput> process(UserBookInput input) {
         log.info("Start book room: {}", input);
         return validateInput(input).flatMap(validInput -> Try.of(()->{
             ageCheck(input.getDateOfBirth());

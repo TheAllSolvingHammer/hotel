@@ -43,8 +43,8 @@ public class InputQueryEntityExceptionCase {
                 Case($(instanceOf(IllegalArgumentException.class)), e -> {
                     log.error("Wrong arguments: {}", e.getMessage());
                     return ErrorsProcessor.builder()
-                            .httpStatus(HttpStatus.NOT_FOUND)
-                            .statusCode(HttpStatus.NOT_FOUND.value())
+                            .httpStatus(HttpStatus.BAD_REQUEST)
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
                             .message(e.getMessage())
                             .build();
                 })

@@ -14,13 +14,17 @@ import java.util.List;
 @AllArgsConstructor()
 @Builder
 public class AdminCreateInput implements OperationInput {
-    @NotBlank
+    @NotBlank(message = "Room number can not be blank")
     private String roomNumber;
+    @NotNull(message="Bedtypes list is null")
     private List<String> bedType;
+    @NotBlank(message="Bathroom can not be blank")
     private String bathRoom;
+    @NotNull(message="Floor can not be null")
     @Positive(message = "Floor can not be negative or zero")
     @Max(value=20, message = "Floor can not be more than 20")
     private Integer floor;
+    @NotNull(message="Price can not be blank")
     @PositiveOrZero(message = "price can not be negative")
     private BigDecimal price;
 }

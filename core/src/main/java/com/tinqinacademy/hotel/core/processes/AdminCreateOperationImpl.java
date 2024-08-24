@@ -1,9 +1,8 @@
 package com.tinqinacademy.hotel.core.processes;
 
-import com.tinqinacademy.hotel.api.base.OperationInput;
-import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.enums.BathRoom;
 import com.tinqinacademy.hotel.api.enums.Bed;
+import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.exceptions.InputException;
 import com.tinqinacademy.hotel.api.exceptions.QueryException;
 import com.tinqinacademy.hotel.api.model.operations.admin.create.AdminCreateInput;
@@ -15,18 +14,18 @@ import com.tinqinacademy.hotel.core.families.converters.StringInputBedsToBedEnti
 import com.tinqinacademy.hotel.persistence.entities.BedEntity;
 import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
 import com.tinqinacademy.hotel.persistence.enums.BathTypes;
-import com.tinqinacademy.hotel.persistence.repositorynew.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -44,8 +43,7 @@ public class AdminCreateOperationImpl extends BaseProcess implements AdminCreate
     }
 
     @Override
-    public Either<ErrorsProcessor, AdminCreateOutput> process(@Valid AdminCreateInput input) {
-        Either<ErrorsProcessor, OperationInput> validate = validateInput(input);
+    public Either<ErrorsProcessor, AdminCreateOutput> process(AdminCreateInput input) {
         return validateInput(input).flatMap(validInput -> Try.of(()->{
                     log.info("Start admin create room: {}", input);
                     getBathRoomCheck(input.getBathRoom());

@@ -8,7 +8,6 @@ import com.tinqinacademy.hotel.core.families.casehandlers.InputQueryExceptionCas
 import com.tinqinacademy.hotel.persistence.repositorynew.ReservationRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class UserUnbookOperationImpl extends BaseProcess implements UserUnbookOp
     }
 
     @Override
-    public Either<ErrorsProcessor, UserUnbookOutput> process(@Valid UserUnbookInput input) {
+    public Either<ErrorsProcessor, UserUnbookOutput> process(UserUnbookInput input) {
         return validateInput(input).flatMap(validInput -> Try.of(()->{
             log.info("Start unbook room: {}", input);
             reservationRepository.deleteById(input.getBookId());

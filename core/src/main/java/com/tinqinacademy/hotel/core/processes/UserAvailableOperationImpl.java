@@ -1,8 +1,8 @@
 package com.tinqinacademy.hotel.core.processes;
 
-import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.enums.BathRoom;
 import com.tinqinacademy.hotel.api.enums.Bed;
+import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.exceptions.InputException;
 import com.tinqinacademy.hotel.api.exceptions.QueryException;
 import com.tinqinacademy.hotel.api.model.operations.user.availablecheck.UserAvailableInput;
@@ -12,7 +12,6 @@ import com.tinqinacademy.hotel.core.families.casehandlers.InputQueryExceptionCas
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class UserAvailableOperationImpl extends BaseProcess implements UserAvail
 
 
     @Override
-    public Either<ErrorsProcessor, UserAvailableOutput> process(@Valid UserAvailableInput input) {
+    public Either<ErrorsProcessor, UserAvailableOutput> process(UserAvailableInput input) {
         log.info("Start check availability: {}", input);
         return validateInput(input).flatMap(validInput -> Try.of(()-> {
             UserAvailableOutput userAvailableOutput = UserAvailableOutput.builder()

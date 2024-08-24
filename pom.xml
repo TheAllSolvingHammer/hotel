@@ -14,8 +14,9 @@
 		<module>api</module>
 		<module>persistence</module>
 		<module>domain</module>
+		<module>restexport</module>
 	</modules>
-	<groupId>com.tinqinacademy</groupId>
+	<groupId>com.tinqinacademy.hotel</groupId>
 	<artifactId>hotel</artifactId>
 	<version>${revision}</version>
 
@@ -80,6 +81,31 @@
 			<artifactId>json-patch</artifactId>
 			<version>1.13</version>
 		</dependency>
+
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-jackson</artifactId>
+			<version>13.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<version>4.1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-okhttp</artifactId>
+			<version>13.3</version>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>de.codecentric</groupId>-->
+<!--			<artifactId>spring-boot-admin-starter-client</artifactId>-->
+<!--			<version>3.0.0</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-actuator</artifactId>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>
