@@ -1,9 +1,9 @@
 package com.tinqinacademy.hotel.core.processes;
 
-import com.tinqinacademy.hotel.api.exceptions.ConverterException;
-import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.enums.BathRoom;
 import com.tinqinacademy.hotel.api.enums.Bed;
+import com.tinqinacademy.hotel.api.exceptions.ConverterException;
+import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.exceptions.QueryException;
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomInput;
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomOperation;
@@ -17,7 +17,6 @@ import com.tinqinacademy.hotel.persistence.repositorynew.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ public class UserDisplayRoomOperationImpl extends BaseProcess implements UserDis
     }
 
     @Override
-    public Either<ErrorsProcessor, UserDisplayRoomOutput> process(@Valid UserDisplayRoomInput input) {
+    public Either<ErrorsProcessor, UserDisplayRoomOutput> process(UserDisplayRoomInput input) {
         log.info("Start display room: {}", input);
         return validateInput(input).flatMap(validInput -> Try.of(()-> {
             RoomEntity roomEntity = roomRepository.getReferenceById(input.getRoomID());

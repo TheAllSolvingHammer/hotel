@@ -5,13 +5,10 @@ import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegister
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOperation;
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOutput;
 import com.tinqinacademy.hotel.core.families.casehandlers.InputQueryExceptionCase;
-import com.tinqinacademy.hotel.core.specifiers.GuestSpecifications;
 import com.tinqinacademy.hotel.persistence.entities.GuestEntity;
 import com.tinqinacademy.hotel.persistence.repositorynew.GuestRepository;
-import com.tinqinacademy.hotel.persistence.repositorynew.ReservationRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,38 +16,47 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
+
+import static com.tinqinacademy.hotel.core.specifiers.GuestSpecifications.*;
 
 @Service
 @Slf4j
 public class AdminRegisterOperationImpl extends BaseProcess implements AdminRegisterOperation {
     private final GuestRepository guestRepository;
-    private final ReservationRepository reservationRepository;
     @Autowired
-    public AdminRegisterOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator, GuestRepository guestRepository, ReservationRepository reservationRepository) {
+    public AdminRegisterOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator, GuestRepository guestRepository) {
         super(conversionService, errorMapper, validator);
         this.guestRepository = guestRepository;
-        this.reservationRepository = reservationRepository;
     }
 
     @Override
-    public Either<ErrorsProcessor, AdminRegisterOutput> process(@Valid AdminRegisterInput input) {
+    public Either<ErrorsProcessor, AdminRegisterOutput> process(AdminRegisterInput input) {
         return validateInput(input).flatMap(validInput -> Try.of(()->{
-                    log.info("Start admin info: {}", input);
+                    log.info("Start getGuestReport input: {}", input.toString());
 
-                    Specification<GuestEntity> specification = Specification.where(GuestSpecifications.hasRoomId(input.getRoomID()))
-                            .and(GuestSpecifications.betweenDates(input.getStartDate(), input.getEndDate()))
-                            .and(GuestSpecifications.hasFirstName(input.getFirstName()))
-                            .and(GuestSpecifications.hasLastName(input.getLastName()))
-                            .and(GuestSpecifications.hasPhone(input.getPhone()))
-                            .and(GuestSpecifications.hasIdNumber(input.getIdNumber()));
+                    Set<GuestEntity> allGuestsInTimePeriod = new HashSet<>(guestRepository.findByStartDateAndEndDate(input.getStartDate(), input.getEndDate()));
 
-                    log.info("Test{}",specification);
+                    List<Specification<GuestEntity>> specifications = new ArrayList<>();
+                    specifications.add(hasFirstName(input.getFirstName()));
+                    specifications.add(hasLastName(input.getLastName()));
+                    specifications.add(hasCardNumber(input.getIdNumber()));
+                    specifications.add(hasCardIssueAuthority(input.getAuthority()));
+                    specifications.add(hasCardValidity(input.getValidity().toString()));
+                    specifications.add(hasCardIssueDate(input.getIssueDate().toString()));
 
-                    List<GuestEntity> guests = guestRepository.findAll(specification);
+                    List<Specification<GuestEntity>> enteredFields = specifications.stream().filter(Objects::nonNull).toList();
+
+                    Specification<GuestEntity> finalSpecification = specificationBuilder(enteredFields);
+
+                    Set<GuestEntity> filteredGuests = new HashSet<>(guestRepository.findAll(finalSpecification));
+
+                    List<GuestEntity> resultGuests = allGuestsInTimePeriod.stream()
+                            .filter(filteredGuests::contains)
+                            .toList();
 
                     AdminRegisterOutput adminRegisterOutput = AdminRegisterOutput.builder()
-                            .data(guests.stream()
+                            .data(resultGuests.stream()
                                     .map(guest -> String.format("Guest: %s %s, Phone: %s, ID: %s", guest.getFirstName(), guest.getLastName(), guest.getPhoneNumber(), guest.getIdCardNumber()))
                                     .toList())
                             .startDate(input.getStartDate())
@@ -65,12 +71,18 @@ public class AdminRegisterOperationImpl extends BaseProcess implements AdminRegi
                             .roomID(input.getRoomID())
                             .build();
 
-                    log.info("End admin info: {}", adminRegisterOutput);
+
+                    log.info("End of getGuestReport result: {}", adminRegisterOutput);
                     return adminRegisterOutput;
-
-
 
         }).toEither()
                 .mapLeft(InputQueryExceptionCase::handleThrowable));
+    }
+    private Specification<GuestEntity> specificationBuilder(List<Specification<GuestEntity>> specifications) {
+        Specification<GuestEntity> result = specifications.getFirst();
+        for (int i = 1; i < specifications.size(); i++) {
+            result = result.and(specifications.get(i));
+        }
+        return result;
     }
 }

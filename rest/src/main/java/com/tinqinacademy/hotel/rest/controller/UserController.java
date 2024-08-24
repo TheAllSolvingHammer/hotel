@@ -9,7 +9,7 @@ import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplay
 import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplayRoomOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookInput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookOperation;
-import com.tinqinacademy.hotel.rest.constants.MappingsConstants;
+import com.tinqinacademy.hotel.core.constants.MappingsConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

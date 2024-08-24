@@ -13,11 +13,9 @@ import com.tinqinacademy.hotel.core.families.converters.StringInputBedsToBedEnti
 import com.tinqinacademy.hotel.persistence.entities.BedEntity;
 import com.tinqinacademy.hotel.persistence.entities.RoomEntity;
 import com.tinqinacademy.hotel.persistence.enums.BathTypes;
-import com.tinqinacademy.hotel.persistence.repositorynew.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +30,12 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class AdminUpdateOperationImpl extends BaseProcess implements AdminUpdateOperation{
-    private final BedRepository bedRepository;
     private final RoomRepository roomRepository;
     private final BedEnumToStringListConverter bedEnumToStringListConverter;
     private final StringInputBedsToBedEntitiesConverter stringInputBedsToBedEntities;
     @Autowired
-    public AdminUpdateOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator, BedRepository bedRepository, RoomRepository roomRepository, BedEnumToStringListConverter bedEnumToStringListConverter, StringInputBedsToBedEntitiesConverter stringInputBedsToBedEntities) {
+    public AdminUpdateOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator, RoomRepository roomRepository, BedEnumToStringListConverter bedEnumToStringListConverter, StringInputBedsToBedEntitiesConverter stringInputBedsToBedEntities) {
         super(conversionService, errorMapper, validator);
-        this.bedRepository = bedRepository;
         this.roomRepository = roomRepository;
         this.bedEnumToStringListConverter = bedEnumToStringListConverter;
         this.stringInputBedsToBedEntities = stringInputBedsToBedEntities;
@@ -47,7 +43,7 @@ public class AdminUpdateOperationImpl extends BaseProcess implements AdminUpdate
 
 
     @Override
-    public Either<ErrorsProcessor, AdminUpdateOutput> process(@Valid AdminUpdateInput input) {
+    public Either<ErrorsProcessor, AdminUpdateOutput> process(AdminUpdateInput input) {
         return validateInput(input).flatMap(validInput -> Try.of(() -> {
                     log.info("Start admin update room: {}", input);
                     verifyRoom(input);

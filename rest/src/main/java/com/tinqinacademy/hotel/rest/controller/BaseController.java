@@ -1,15 +1,15 @@
 package com.tinqinacademy.hotel.rest.controller;
 
-import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.base.OperationOutput;
+import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import io.vavr.control.Either;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
+@NoArgsConstructor
 public abstract class BaseController {
 
     public ResponseEntity<?> handleOperation(Either<ErrorsProcessor, ? extends OperationOutput> result) {

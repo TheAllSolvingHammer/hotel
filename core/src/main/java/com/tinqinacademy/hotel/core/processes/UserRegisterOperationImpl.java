@@ -16,7 +16,6 @@ import com.tinqinacademy.hotel.persistence.repositorynew.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositorynew.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -54,7 +52,7 @@ public class UserRegisterOperationImpl extends BaseProcess implements UserRegist
     }
 
     @Override
-    public Either<ErrorsProcessor, UserRegisterOutput> process(@Valid UserRegisterInput input) {
+    public Either<ErrorsProcessor, UserRegisterOutput> process(UserRegisterInput input) {
         return validateInput(input).flatMap(validInput -> Try.of(() -> {
                     log.info("Start register person: {}", input);
                     UUID roomID=getRoomUUID(input);
