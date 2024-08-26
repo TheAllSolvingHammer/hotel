@@ -16,7 +16,7 @@ import com.tinqinacademy.hotel.api.model.operations.user.displayroom.UserDisplay
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterInput;
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOutput;
 import com.tinqinacademy.hotel.api.model.operations.user.unbook.UserUnbookOutput;
-import com.tinqinacademy.hotel.core.constants.MappingsConstants;
+import com.tinqinacademy.hotel.api.constants.MappingsConstants;
 import feign.RequestLine;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;

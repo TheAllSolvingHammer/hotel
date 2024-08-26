@@ -13,7 +13,7 @@ import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateInpu
 import com.tinqinacademy.hotel.api.model.operations.admin.update.AdminUpdateOperation;
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterInput;
 import com.tinqinacademy.hotel.api.model.operations.user.register.UserRegisterOperation;
-import com.tinqinacademy.hotel.core.constants.MappingsConstants;
+import com.tinqinacademy.hotel.api.constants.MappingsConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.core.constants;
+package com.tinqinacademy.hotel.api.constants;
 
 public class MappingsConstants {
 
