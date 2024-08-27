@@ -18,11 +18,14 @@ public interface GuestRepository extends JpaRepository<GuestEntity, UUID>, JpaSp
 FROM guests g
 JOIN reservation_guests rg ON g.guest_id = rg.guest_id
 JOIN reservations res ON rg.reservation_id = res.reservation_id
-WHERE res.start_date = :startDate
-  AND res.end_date = :endDate
+JOIN rooms r ON res.room_id = r.id
+            WHERE r.room_number = :roomNumber
+                  AND res.start_date <= :endDate
+                  AND res.end_date >= :startDate
            """;
 
     @Query(value = query, nativeQuery = true)
-    List<GuestEntity> findByStartDateAndEndDate(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    List<GuestEntity> findByStartDateAndEndDate(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate,@Param("roomNumber") String roomNumber);
+
 
 }

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class BaseProcess {
-    private final ConversionService conversionService;
+    protected final ConversionService conversionService;
     private final ErrorsProcessor errorMapper;
     private final Validator validator;
     @Autowired

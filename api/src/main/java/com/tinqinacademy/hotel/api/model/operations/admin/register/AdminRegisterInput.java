@@ -1,10 +1,7 @@
 package com.tinqinacademy.hotel.api.model.operations.admin.register;
 
 import com.tinqinacademy.hotel.api.base.OperationInput;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -34,5 +31,6 @@ public class AdminRegisterInput implements OperationInput {
     private String authority;
     @PastOrPresent(message = "Issue date can not be in the future")
     private LocalDate issueDate;
-    private String roomID;
+    @NotNull(message = "Can not be null")
+    private String room;
 }

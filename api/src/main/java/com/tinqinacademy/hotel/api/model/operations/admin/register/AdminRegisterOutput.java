@@ -13,15 +13,8 @@ import java.util.List;
 @AllArgsConstructor()
 @Builder
 public class AdminRegisterOutput implements OperationOutput {
-    private List<String> data;
+    private List<Data> data;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String firstName;
-    private String lastName;
-    private String phone;
-    private String idNumber;
-    private LocalDate validity;
-    private String authority;
-    private LocalDate issueDate;
-    private String roomID;
+
 }

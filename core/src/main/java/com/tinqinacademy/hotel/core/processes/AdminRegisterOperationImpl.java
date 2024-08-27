@@ -4,7 +4,9 @@ import com.tinqinacademy.hotel.api.exceptions.ErrorsProcessor;
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterInput;
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOperation;
 import com.tinqinacademy.hotel.api.model.operations.admin.register.AdminRegisterOutput;
+import com.tinqinacademy.hotel.api.model.operations.admin.register.Data;
 import com.tinqinacademy.hotel.core.families.casehandlers.InputQueryExceptionCase;
+import com.tinqinacademy.hotel.core.specifiers.SpecificationsUtil;
 import com.tinqinacademy.hotel.persistence.entities.GuestEntity;
 import com.tinqinacademy.hotel.persistence.repositorynew.GuestRepository;
 import io.vavr.control.Either;
@@ -25,7 +27,7 @@ import static com.tinqinacademy.hotel.core.specifiers.GuestSpecifications.*;
 public class AdminRegisterOperationImpl extends BaseProcess implements AdminRegisterOperation {
     private final GuestRepository guestRepository;
     @Autowired
-    public AdminRegisterOperationImpl(ConversionService conversionService, ErrorsProcessor errorMapper, Validator validator, GuestRepository guestRepository) {
+    public AdminRegisterOperationImpl(ConversionService conversionService,ErrorsProcessor errorMapper, Validator validator, GuestRepository guestRepository) {
         super(conversionService, errorMapper, validator);
         this.guestRepository = guestRepository;
     }
@@ -35,54 +37,48 @@ public class AdminRegisterOperationImpl extends BaseProcess implements AdminRegi
         return validateInput(input).flatMap(validInput -> Try.of(()->{
                     log.info("Start getGuestReport input: {}", input.toString());
 
-                    Set<GuestEntity> allGuestsInTimePeriod = new HashSet<>(guestRepository.findByStartDateAndEndDate(input.getStartDate(), input.getEndDate()));
+                    List<Specification<GuestEntity>> predicates = getSpecifications(input);
 
-                    List<Specification<GuestEntity>> specifications = new ArrayList<>();
-                    specifications.add(hasFirstName(input.getFirstName()));
-                    specifications.add(hasLastName(input.getLastName()));
-                    specifications.add(hasCardNumber(input.getIdNumber()));
-                    specifications.add(hasCardIssueAuthority(input.getAuthority()));
-                    specifications.add(hasCardValidity(input.getValidity().toString()));
-                    specifications.add(hasCardIssueDate(input.getIssueDate().toString()));
+                    Specification<GuestEntity> specification = SpecificationsUtil.combineSpecifications(predicates);
 
-                    List<Specification<GuestEntity>> enteredFields = specifications.stream().filter(Objects::nonNull).toList();
+                    Set<GuestEntity> specifiedGuests = new HashSet<>(guestRepository.findAll(specification));
 
-                    Specification<GuestEntity> finalSpecification = specificationBuilder(enteredFields);
+                    List<GuestEntity> allGuests = guestRepository.findByStartDateAndEndDate(
+                            input.getStartDate(), input.getEndDate(), input.getRoom()
+                    );
 
-                    Set<GuestEntity> filteredGuests = new HashSet<>(guestRepository.findAll(finalSpecification));
 
-                    List<GuestEntity> resultGuests = allGuestsInTimePeriod.stream()
-                            .filter(filteredGuests::contains)
+                    List<GuestEntity> filteredGuests = allGuests.stream()
+                            .filter(specifiedGuests::contains)
                             .toList();
 
-                    AdminRegisterOutput adminRegisterOutput = AdminRegisterOutput.builder()
-                            .data(resultGuests.stream()
-                                    .map(guest -> String.format("Guest: %s %s, Phone: %s, ID: %s", guest.getFirstName(), guest.getLastName(), guest.getPhoneNumber(), guest.getIdCardNumber()))
-                                    .toList())
-                            .startDate(input.getStartDate())
-                            .endDate(input.getEndDate())
-                            .firstName(input.getFirstName())
-                            .lastName(input.getLastName())
-                            .phone(input.getPhone())
-                            .idNumber(input.getIdNumber())
-                            .validity(input.getValidity())
-                            .authority(input.getAuthority())
-                            .issueDate(input.getIssueDate())
-                            .roomID(input.getRoomID())
-                            .build();
+                    List<Data> guestInfo = filteredGuests.stream()
+                            .map(guest -> conversionService.convert(guest, Data.class))
+                            .toList();
 
+                    AdminRegisterOutput output = outputBuilder(guestInfo);
 
-                    log.info("End of getGuestReport result: {}", adminRegisterOutput);
-                    return adminRegisterOutput;
+                    log.info("End getRegisterInfo output: {}", output);
+                    return output;
 
         }).toEither()
                 .mapLeft(InputQueryExceptionCase::handleThrowable));
     }
-    private Specification<GuestEntity> specificationBuilder(List<Specification<GuestEntity>> specifications) {
-        Specification<GuestEntity> result = specifications.getFirst();
-        for (int i = 1; i < specifications.size(); i++) {
-            result = result.and(specifications.get(i));
-        }
-        return result;
+    private AdminRegisterOutput outputBuilder(List<Data> guestInfo) {
+        return AdminRegisterOutput.builder()
+                .data(guestInfo)
+                .build();
+    }
+
+    private  List<Specification<GuestEntity>> getSpecifications(AdminRegisterInput input) {
+        return new ArrayList<>() {{
+            add(guestHasFirstName(input.getFirstName()));
+            add(guestHasLastName(input.getLastName()));
+            add(guestHasPhoneNumber(input.getPhone()));
+            add(guestHasIdCardNumber(input.getIdNumber()));
+            add(guestHasIdCardValidity(String.valueOf(input.getValidity())));
+            add(guestHasIdCardIssueDate(String.valueOf(input.getIssueDate())));
+            add(guestHasIdCardIssueAuthority(input.getAuthority()));
+        }};
     }
 }
